@@ -5,56 +5,56 @@
     --cinza-texto: #94a3b8;
     --branco-neve: #f8fafc;
 }
-
 body {
     font-family: 'Urbanist', sans-serif;
     background-color: #f1f5f9;
     color: var(--azul-industrial);
+    scroll-behavior: smooth;
 }
-
-
 .navbar-custom {
     background-color: var(--azul-industrial);
-    padding: 10px 0;
+    padding: 15px 0;
 }
-
-.search-bar {
-    border-radius: 4px;
-    border: none;
-    padding: 8px 15px;
+.search-container {
+    max-width: 600px;
     width: 100%;
 }
-
+.search-bar {
+    border-radius: 4px 0 0 4px;
+    border: none;
+    padding: 10px 15px;
+    width: 100%;
+    outline: none;
+}
 .btn-search {
     background-color: var(--laranja-ferrorama);
     color: white;
     border: none;
-    padding: 8px 20px;
+    padding: 10px 20px;
     border-radius: 0 4px 4px 0;
-    margin-left: -5px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-.btn-search:hover {
-    background-color: #ea580c;
-}
-
+.btn-search:hover { background-color: #ea580c; }
 .nav-link-custom {
     color: var(--branco-neve) !important;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-right: 15px;
+    transition: 0.2s;
+    cursor: pointer;
+    text-decoration: none;
 }
-
-.nav-link-custom:hover {
+.nav-link-custom:hover, .nav-link-custom.active {
     color: var(--laranja-ferrorama) !important;
 }
-
-
 .hero-banner {
-    background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), 
+    background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
                 url('https://images.unsplash.com/photo-1535961652354-923cb08225a7?auto=format&fit=crop&q=80&w=1200');
     background-size: cover;
     background-position: center;
-    height: 300px;
+    height: 350px;
     border-radius: 0 0 20px 20px;
     display: flex;
     align-items: center;
@@ -62,8 +62,6 @@ body {
     color: white;
     text-align: center;
 }
-
-
 .cat-card {
     background: white;
     border-radius: 50%;
@@ -78,43 +76,41 @@ body {
     font-size: 1.5rem;
     transition: 0.3s;
     cursor: pointer;
+    border: 3px solid transparent;
 }
-
 .cat-card:hover {
-    background: var(--laranja-ferrorama);
-    color: white;
     transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(249, 115, 22, 0.2);
 }
-
-
+.cat-card-active {
+    background-color: var(--laranja-ferrorama);
+    color: white;
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 8px 12px rgba(249, 115, 22, 0.4);
+}
 .product-card {
     border: none;
     border-radius: 12px;
     transition: 0.3s;
     overflow: hidden;
     background: white;
+    cursor: pointer;
+    height: 100%;
 }
-
 .product-card:hover {
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
 }
-
 .product-img {
     height: 200px;
-    background-color: #eee;
+    background-color: #f8fafc;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #cbd5e1;
 }
-
 .price-tag {
     font-size: 1.4rem;
     font-weight: 700;
     color: #1e293b;
-}
-
-.shipping-free {
-    color: #00a650;
-    font-size: 0.85rem;
-    font-weight: 600;
 }
