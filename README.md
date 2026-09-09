@@ -1,35 +1,82 @@
-# Projeto Ferrorama
+# Projeto Ferrorama - Sistema de Gestao e Monitoramento Ferroviario
 
-Esse é o projeto do site de Ferrorama que estamos desenvolvendo para a Situação de Aprendizagem do curso. O sistema serve para ver peças de trens elétricos, cadastrar sensores para as pistas e ver a lista de usuários do sistema.
+## 1. Sumario
+- 1. Sobre o Projeto
+- 2. Funcionalidades e Requisitos
+- 3. Arquitetura e Tecnologias
+- 4. Estrutura do Repositorio
+- 5. Pre-requisitos e Instalacao
+- 6. Configuracao do Banco de Dados
+- 7. Teste e Validacao da Conexao
+- 8. Pesquisa Teorica: PDO vs MySQLi
+- 9. Metodologia Agil e Kanban
+- 10. Padrao de Commits e Rastreabilidade
+- 11. Equipe e Contribuidores
 
+## 1. Sobre o Projeto
 
+O Ferrorama e um sistema web desenvolvido no contexto da Situacao de Aprendizagem do curso tecnico. A aplicacao visa realizar o controle, gerenciamento e monitoramento em tempo real de maquetes e circuitos ferroviarios automatizados, permitindo o cadastro de sensores de pista, gerenciamento de usuarios do sistema, simulacao de carrinho de compras de itens ferroviarios e controle de pecas.
 
-Quadro de Tarefas (Kanban no GitHub): (https://github.com/murilocastilho-gif/SA-M-E)
-Pesquisa sobre Scrum: Veja o arquivo `docs/scrum.md`
+Na Etapa 1, o projeto foi estruturado com prototipacao estatica em HTML5, CSS3, JavaScript e documentacao em Markdown baseada na metodologia Scrum.
 
+Na Etapa 2, o sistema passou por uma refatoracao tecnica, convertendo as paginas estaticas para arquivos .php, estruturando o modelo de inclusao de modulos reutilizaveis (header.php e footer.php), criando a camada de conexao com o banco de dados MySQL via extensao MySQLi e documentando um estudo teorico sobre PDO.
 
+## 2. Funcionalidades e Requisitos
 
-Murilo Guimarães Castilho: Criou a tela principal (Home), a tela de usuários e organizou o CSS com o Bootstrap.
-Enzo Venturi Gubulin: Fez o código em JavaScript (carrinho e sensores), organizou a pesquisa do Scrum e criou o README.
+### Requisitos Funcionais (RF)
+- [RF01] Vitrine e Tela Principal (index.php): Apresentacao visual dos produtos, categorias de locomotivas e trilhos, com cabecalho responsivo e rodape dinamico.
+- [RF02] Gestao de Usuarios (tela-lista-usuarios.php): Exibicao da tabela de usuarios cadastrados no sistema com niveis de acesso (Administrador e Comprador).
+- [RF03] Gerenciamento de Sensores (tela-cadastro-sensores.php): Formulario de cadastro e listagem dinamica dos sensores de presenca, velocidade e parada instalados nos trilhos.
+- [RF04] Carrinho de Compras / Offcanvas: Painel lateral dinamico acionado pelo menu para selecao de itens e calculo do valor total.
+- [RF05] Pesquisa teorica e Documentacao Scrum: Registro dos papeis, rituais e artefatos do Scrum em docs/scrum.md, acompanhado do estudo comparativo sobre conexoes PHP em pesquisas/pdo.md.
 
+### Requisitos Nao Funcionais (RNF)
+- [RNF01] Modularidade: Arquitetura desacoplada utilizando inclusao de cabecalhos e rodapes reutilizaveis.
+- [RNF02] Conectividade: Uso da extensao MySQLi para comunicacao segura com a base de dados.
+- [RNF03] Responsividade: Interface adaptavel para celulares, tablets e desktops via Bootstrap 5.
+- [RNF04] Rastreabilidade: Mapeamento bidirecional completo entre Requisito -> Kanban -> Codigo -> Commit.
 
+## 3. Arquitetura e Tecnologias
 
-HTML5: Para criar a estrutura das páginas.
-CSS3 e Bootstrap 5: Para deixar o site bonito e organizado na tela do celular e do PC.
-JavaScript: Para fazer as coisas funcionarem (como o carrinho de compras e o cadastro de sensores).
-FontAwesome:Para os ícones do menu e dos botões.
-GitHub: Para guardar o código e organizar as tarefas.
+A aplicacao segue uma arquitetura cliente-servidor monolitica baseada no padrao modular PHP.
 
+### Tecnologias Utilizadas:
+- Backend: PHP 8.2 (Procedural e Modular)
+- Banco de Dados: MySQL 8.0
+- Frontend: HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3, FontAwesome 6.4
+- Controle de Versao: Git e GitHub
+- Gestao do Projeto: GitHub Projects (Kanban)
+- Servidor Local: XAMPP / WAMP / Laragon (Apache)
 
+## 4. Estrutura do Repositorio
 
-RF01 Tela inicial (Home) com menu, produtos e busca  Pronta 
-RF02 Tela com tabela para listar os usuários  Em andamento 
-RF03 Tela e formulário para cadastrar sensores de pista  Pronta 
-RF04 Carrinho de compras do lado da tela  Pronta 
+Organizacao detalhada das pastas e arquivos do sistema:
 
-
-
-A gente escolheu usar o Scrumban (que é misturar Scrum com Kanban). 
-
-Como a dupla tem só duas pessoas, essa foi a melhor opção porque a gente consegue colocar todas as tarefas num quadro visual (Kanban) no GitHub Projects e ir arrastando o que tá fazendo. Além disso, a gente faz reuniões curtinhas (Daily) para ver o que cada um fez e se alguém teve algum problema.
-
+```text
+ferrorama/
+│
+├── assets/                  # Arquivos estaticos do sistema
+│   ├── js/                  # Scripts JavaScript
+│   │   └── sensores.js      # Manipulacao dinamica da tabela de sensores
+│   └── style/               # Estilos CSS customizados
+│       └── style.css        # Regras de estilo globais do Ferrorama
+│
+├── config/                  # Arquivos de configuracao do servidor
+│   └── conexao.php          # Script de conexao MySQLi com tratamento de erro
+│
+├── docs/                    # Documentacao do projeto
+│   └── scrum.md             # Pesquisa sobre a metodologia agil Scrum
+│
+├── includes/                # Componentes reutilizaveis PHP
+│   ├── footer.php           # Rodape padrao e inclusao de scripts
+│   └── header.php           # Cabecalho, navegacao e inclusao de CSS
+│
+├── pesquisas/               # Estudos tecnicos do curso
+│   └── pdo.md               # Pesquisa aprofundada sobre a extensao PDO
+│
+├── index.php                # Pagina inicial do sistema (Home/Vitrine)
+├── tela-cadastro-sensores.php # Pagina de cadastro e gestao de sensores
+├── tela-lista-usuarios.php    # Pagina de visualizacao de usuarios
+├── teste-conexao.php        # Pagina de validacao do status do banco
+├── README.md                # Documentacao tecnica principal do repositorio
+└── .gitignore               # Arquivos ignorados pelo controle de versao
