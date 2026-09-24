@@ -3,7 +3,7 @@ require_once 'conexao.php';
 require_once 'cabecalho.php';
 
 $stmt = $pdo->query("SELECT * FROM usuarios");
-$usuarios = $stmt->fetchAll();
+$usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -30,29 +30,36 @@ $usuarios = $stmt->fetchAll();
                 </tr>
             </thead>
             <tbody>
-                <?php if (count($usuarios) > 0): ?>
-                    <?php foreach ($usuarios as $u): ?>
+                <?php if (!empty($usuarios)): ?>
+                    <?php foreach ($usuarios as $u): 
+                        $id     = $u['id'] ?? $u['id_usuario'] ?? '';
+                        $nome   = $u['nome'] ?? '';
+                        $cpf    = $u['cpf'] ?? '';
+                        $email  = $u['email'] ?? '';
+                        $perfil = $u['perfil'] ?? $u['perfil_acesso'] ?? 'Indefinido';
+                        $status = $u['status'] ?? 'Inativo';
+                    ?>
                         <tr>
-                          <td><?= htmlspecialchars($u['id'] ?? $u['id_usuario'] ?? ''); ?></td>
-                          <td><?= htmlspecialchars($u['nome'] ?? ''); ?></td>
-                          <td><?= htmlspecialchars($u['cpf'] ?? ''); ?></td>
-                          <td><?= htmlspecialchars($u['email'] ?? ''); ?></td>
+                            <td><?= htmlspecialchars($id); ?></td>
+                            <td><?= htmlspecialchars($nome); ?></td>
+                            <td><?= htmlspecialchars($cpf); ?></td>
+                            <td><?= htmlspecialchars($email); ?></td>
                             <td>
-                                <span class="badge bg-<?= $u['perfil'] === 'Administrador' ? 'danger' : 'info'; ?>">
-                                    <?= htmlspecialchars($u['perfil']); ?>
+                                <span class="badge bg-<?= ($perfil === 'Administrador') ? 'danger' : 'info'; ?>">
+                                    <?= htmlspecialchars($perfil); ?>
                                 </span>
                             </td>
                             <td>
-                                <span class="badge bg-<?= $u['status'] === 'Ativo' ? 'success' : 'secondary'; ?>">
-                                    <?= htmlspecialchars($u['status']); ?>
+                                <span class="badge bg-<?= ($status === 'Ativo') ? 'success' : 'secondary'; ?>">
+                                    <?= htmlspecialchars($status); ?>
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a href="tela-editar-user.php?id=<?= $u['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
-                                <a href="processa-exclusao-user.php?id=<?= $u['id']; ?>" 
+                                <a href="tela-editar-user.php?id=<?= $id; ?>" class="btn btn-sm btn-warning">Editar</a>
+                                <a href="processa-exclusao-user.php?id=<?= $id; ?>" 
                                    class="btn btn-sm btn-danger" 
                                    onclick="return confirm('Confirma a exclusão deste utilizador?');">
-                                   Excluir
+                                    Excluir
                                 </a>
                             </td>
                         </tr>
