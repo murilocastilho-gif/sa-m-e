@@ -22,7 +22,7 @@
             </div>
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
             <div class="text-center mt-3">
-                <a href="tela-cadastro-user.html" class="text-decoration-none">Ainda não tem conta? Cadastre-se</a>
+                <a href="tela-cadastro-user.php" class="text-decoration-none">Ainda não tem conta? Cadastre-se</a>
             </div>
         </form>
     </div>
