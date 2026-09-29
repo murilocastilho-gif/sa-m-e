@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -9,23 +14,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
         <div class="container d-flex flex-column">
             <div class="d-flex w-100 align-items-center justify-content-between mb-3">
-                <a class="navbar-brand fw-bold text-white fs-3 m-0" href="../index.html">
-                    <span style="color: var(--laranja-ferrorama);">FERRO</span>RAMA
+                <a class="navbar-brand fw-bold text-white fs-3 m-0" href="../index.php">
+                    <span style="color: var(--laranja-ferrorama, #ff6600);">FERRO</span>RAMA
                 </a>
 
                 <div class="d-flex flex-grow-1 mx-4 search-container">
-                    <input type="text" id="campo-busca" class="search-bar" placeholder="Buscar locomotivas, trilhos, vagões...">
-                    <button id="botao-busca" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <input type="text" id="campo-busca" class="search-bar form-control" placeholder="Buscar locomotivas, trilhos, vagões...">
+                    <button id="botao-busca" class="btn btn-warning ms-2"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
 
                 <div class="d-none d-lg-flex align-items-center text-nowrap gap-3">
-                    <a href="tela-login.html" class="nav-link-custom m-0"><i class="fa-regular fa-user me-1"></i> Entrar</a>
-                    <a class="nav-link-custom m-0 position-relative" data-bs-toggle="offcanvas" href="#carrinhoLateral" role="button">
+                    <?php if (isset($_SESSION['logado']) &&$_SESSION['logado'] === true): ?>
+                        <span class="text-white fw-bold"><i class="fa-regular fa-user me-1"></i> Olá, <?= htmlspecialchars($_SESSION['usuario_nome'] ?? 'Usuário'); ?></span>
+                        <a href="tela-login.php" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-right-from-bracket me-1"></i> Sair</a>
+                    <?php else: ?>
+                        <a href="tela-login.php" class="nav-link-custom m-0 text-white text-decoration-none"><i class="fa-regular fa-user me-1"></i> Entrar</a>
+                    <?php endif; ?>
+
+                    <a class="nav-link-custom m-0 position-relative text-white" data-bs-toggle="offcanvas" href="#carrinhoLateral" role="button">
                         <i class="fa-solid fa-cart-shopping fs-5"></i>
                         <span id="badge-carrinho" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">0</span>
                     </a>
@@ -34,12 +45,12 @@
 
             <div class="w-100">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-row gap-3 overflow-auto">
-                    <li class="nav-item"><a class="nav-link-custom" href="#secao-categorias">Categorias</a></li>
-                    <li class="nav-item"><a class="nav-link-custom" href="#" onclick="ativarFiltroMenu(event, 'motores')">Locomotivas</a></li>
-                    <li class="nav-item"><a class="nav-link-custom" href="#" onclick="ativarFiltroMenu(event, 'trilhos')">Trilhos e Curvas</a></li>
-                    <li class="nav-item"><a class="nav-link-custom" href="#vitrine-produtos">Ofertas do Dia</a></li>
-                    <li class="nav-item"><a class="nav-link-custom" href="tela-cadastro-user.html">Vender Peças</a></li>
-                    <li class="nav-item"><a class="nav-link-custom text-warning fw-bold" href="tela-lista-usuarios.html">Gerenciar Usuários</a></li>
+                    <li class="nav-item"><a class="nav-link-custom text-white text-decoration-none" href="#secao-categorias">Categorias</a></li>
+                    <li class="nav-item"><a class="nav-link-custom text-white text-decoration-none" href="#" onclick="ativarFiltroMenu(event, 'motores')">Locomotivas</a></li>
+                    <li class="nav-item"><a class="nav-link-custom text-white text-decoration-none" href="#" onclick="ativarFiltroMenu(event, 'trilhos')">Trilhos e Curvas</a></li>
+                    <li class="nav-item"><a class="nav-link-custom text-white text-decoration-none" href="#vitrine-produtos">Ofertas do Dia</a></li>
+                    <li class="nav-item"><a class="nav-link-custom text-white text-decoration-none" href="tela-cadastro-user.php">Vender Peças</a></li>
+                    <li class="nav-item"><a class="nav-link-custom text-warning fw-bold text-decoration-none" href="tela-lista-usuarios.php">Gerenciar Usuários</a></li>
                 </ul>
             </div>
         </div>
@@ -62,7 +73,7 @@
     </div>
 
     <div class="container mt-4">
-        <div class="hero-banner shadow">
+        <div class="hero-banner shadow p-5 bg-dark text-white rounded">
             <div>
                 <h1 class="display-4 fw-bold">Expedição Natal 2026</h1>
                 <p class="fs-5">Complete sua coleção com sets exclusivos de locomotivas a vapor.</p>
@@ -74,28 +85,28 @@
     <div class="container mt-5" id="secao-categorias">
         <div class="row text-center row-cols-2 row-cols-md-6 g-3">
             <div class="col">
-                <div class="cat-card cat-card-active" id="filter-todos"><i class="fa-solid fa-border-all"></i></div>
-                <p class="small fw-bold">Todos</p>
+                <div class="cat-card cat-card-active border p-3 rounded" id="filter-todos" style="cursor:pointer;"><i class="fa-solid fa-border-all fa-2x"></i></div>
+                <p class="small fw-bold mt-2">Todos</p>
             </div>
             <div class="col">
-                <div class="cat-card" id="filter-motores"><i class="fa-solid fa-train"></i></div>
-                <p class="small fw-bold">Motores</p>
+                <div class="cat-card border p-3 rounded" id="filter-motores" style="cursor:pointer;"><i class="fa-solid fa-train fa-2x"></i></div>
+                <p class="small fw-bold mt-2">Motores</p>
             </div>
             <div class="col">
-                <div class="cat-card" id="filter-trilhos"><i class="fa-solid fa-road"></i></div>
-                <p class="small fw-bold">Trilhos</p>
+                <div class="cat-card border p-3 rounded" id="filter-trilhos" style="cursor:pointer;"><i class="fa-solid fa-road fa-2x"></i></div>
+                <p class="small fw-bold mt-2">Trilhos</p>
             </div>
             <div class="col">
-                <div class="cat-card" id="filter-sets"><i class="fa-solid fa-box-open"></i></div>
-                <p class="small fw-bold">Sets Completos</p>
+                <div class="cat-card border p-3 rounded" id="filter-sets" style="cursor:pointer;"><i class="fa-solid fa-box-open fa-2x"></i></div>
+                <p class="small fw-bold mt-2">Sets Completos</p>
             </div>
             <div class="col">
-                <div class="cat-card" id="filter-pecas"><i class="fa-solid fa-gears"></i></div>
-                <p class="small fw-bold">Reposição</p>
+                <div class="cat-card border p-3 rounded" id="filter-pecas" style="cursor:pointer;"><i class="fa-solid fa-gears fa-2x"></i></div>
+                <p class="small fw-bold mt-2">Reposição</p>
             </div>
             <div class="col">
-                <div class="cat-card" id="filter-cenarios"><i class="fa-solid fa-mountain-sun"></i></div>
-                <p class="small fw-bold">Cenários</p>
+                <div class="cat-card border p-3 rounded" id="filter-cenarios" style="cursor:pointer;"><i class="fa-solid fa-mountain-sun fa-2x"></i></div>
+                <p class="small fw-bold mt-2">Cenários</p>
             </div>
         </div>
     </div>
@@ -105,89 +116,89 @@
         <div class="row g-4" id="grade-produtos">
             
             <div class="col-md-3 produto-item" data-category="motores">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-train-subway fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-train-subway fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Novo</p>
                         <h6 class="card-title mb-2">Locomotiva XP-300 Clássica Estrela</h6>
-                        <div class="price-tag">R$ 450,00</div>
+                        <div class="price-tag fw-bold text-success">R$ 450,00</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="sets">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-train-tram fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-train-tram fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Usado</p>
                         <h6 class="card-title mb-2">Vagão de Carga Petrobras</h6>
-                        <div class="price-tag">R$ 89,90</div>
+                        <div class="price-tag fw-bold text-success">R$ 89,90</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="cenarios">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-bridge fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-bridge fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Novo</p>
                         <h6 class="card-title mb-2">Kit Expansão: Ponte Metálica</h6>
-                        <div class="price-tag">R$ 120,00</div>
+                        <div class="price-tag fw-bold text-success">R$ 120,00</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="trilhos">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-shuffle fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-shuffle fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Novo</p>
                         <h6 class="card-title mb-2">Cruzamento de Trilhos em X</h6>
-                        <div class="price-tag">R$ 55,00</div>
+                        <div class="price-tag fw-bold text-success">R$ 55,00</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="motores">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-train fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-train fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Usado</p>
                         <h6 class="card-title mb-2">Locomotiva Maria Fumaça</h6>
-                        <div class="price-tag">R$ 320,00</div>
+                        <div class="price-tag fw-bold text-success">R$ 320,00</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="pecas">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-gears fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-gears fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Novo</p>
                         <h6 class="card-title mb-2">Engrenagem Eixo Central</h6>
-                        <div class="price-tag">R$ 25,50</div>
+                        <div class="price-tag fw-bold text-success">R$ 25,50</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="cenarios">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-tree fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-tree fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Novo</p>
                         <h6 class="card-title mb-2">Kit 10 Árvores Pinheiros</h6>
-                        <div class="price-tag">R$ 45,00</div>
+                        <div class="price-tag fw-bold text-success">R$ 45,00</div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 produto-item" data-category="sets">
-                <div class="card product-card shadow-sm" onclick="adicionarAoCarrinho(this)">
-                    <div class="product-img"><i class="fa-solid fa-box-open fa-4x"></i></div>
+                <div class="card product-card shadow-sm h-100" onclick="adicionarAoCarrinho(this)" style="cursor:pointer;">
+                    <div class="product-img text-center p-4 bg-light"><i class="fa-solid fa-box-open fa-4x text-primary"></i></div>
                     <div class="card-body">
                         <p class="mb-1 text-muted small">Novo</p>
                         <h6 class="card-title mb-2">Ferrorama XP 100 - Edição Nova</h6>
-                        <div class="price-tag">R$ 799,00</div>
+                        <div class="price-tag fw-bold text-success">R$ 799,00</div>
                     </div>
                 </div>
             </div>
@@ -196,7 +207,7 @@
     </div>
 
     <footer class="bg-dark text-white pt-5 pb-4 mt-auto">
-        <div class="container text-center text-md-left">
+        <div class="container text-center text-md-start">
             <div class="row">
                 <div class="col-md-3 mx-auto mt-3">
                     <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Ferrorama</h5>
@@ -204,7 +215,7 @@
                 </div>
                 <div class="col-md-2 mx-auto mt-3">
                     <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Links</h5>
-                    <p><a href="tela-cadastro-user.html" class="text-white text-decoration-none small">Minha Conta</a></p>
+                    <p><a href="tela-cadastro-user.php" class="text-white text-decoration-none small">Minha Conta</a></p>
                     <p><a href="#carrinhoLateral" data-bs-toggle="offcanvas" class="text-white text-decoration-none small">Meus Pedidos</a></p>
                 </div>
                 <div class="col-md-3 mx-auto mt-3">

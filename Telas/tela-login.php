@@ -2,13 +2,12 @@
 ob_start();
 session_start();
 
-// Localiza o ficheiro conexao.php
-$caminhoConexao = file_exists('../conexao.php') ? '../conexao.php' : (file_exists('conexao.php') ? 'conexao.php' : null);
+$caminhoConexao = file_exists('conexao.php') ? 'conexao.php' : (file_exists('conexao.php') ? 'conexao.php' : null);
 
 if ($caminhoConexao) {
     require_once $caminhoConexao;
 } else {
-    die("Erro: O ficheiro conexao.php não foi encontrado.");
+    die("Erro: O arquivo conexao.php não foi encontrado.");
 }
 
 $erro = '';
@@ -25,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($usuario) {
                 if ($usuario['status'] !== 'Ativo') {
-                    $erro = "A sua conta está inativa. Contacte o administrador.";
+                    $erro = "A sua conta está inativa. Entre em contato com o administrador.";
                 } else {
                     $senhaValida = ($senha === $usuario['senha']) || password_verify($senha, $usuario['senha']);
 
@@ -35,21 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['usuario_nome']   = $usuario['nome'];
                         $_SESSION['usuario_perfil'] = $usuario['perfil'];
 
-                        // Redireciona para a lista de utilizadores
-                        if (file_exists('tela-lista-usuarios.php')) {
-                            header("Location: tela-lista-usuarios.php");
-                        } elseif (file_exists('tela-lista-usuario.php')) {
-                            header("Location: tela-lista-usuario.php");
-                        } else {
-                            header("Location: tela-lista-usuarios.php");
-                        }
+                        header("Location: tela-home.php");
                         exit;
                     } else {
                         $erro = "Senha incorreta!";
                     }
                 }
             } else {
-                $erro = "E-mail não registado no sistema!";
+                $erro = "E-mail não cadastrado no sistema!";
             }
         } catch (PDOException $e) {
             $erro = "Erro no banco de dados: " . $e->getMessage();
