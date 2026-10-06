@@ -2,7 +2,7 @@
 ob_start();
 session_start();
 
-$caminhoConexao = file_exists('conexao.php') ? 'conexao.php' : (file_exists('conexao.php') ? 'conexao.php' : null);
+$caminhoConexao = file_exists('conexao.php') ? 'conexao.php' : null;
 
 if ($caminhoConexao) {
     require_once $caminhoConexao;
@@ -14,7 +14,7 @@ $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
-    $senha = trim($_POST['senha'] ?? '');
+    $senha = $_POST['senha'] ?? '';
 
     if (!empty($email) && !empty($senha)) {
         try {
@@ -26,9 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($usuario['status'] !== 'Ativo') {
                     $erro = "A sua conta está inativa. Entre em contato com o administrador.";
                 } else {
-                    $senhaValida = ($senha === $usuario['senha']) || password_verify($senha, $usuario['senha']);
+                    $senhaValida = password_verify($senha, $usuario['senha']);
 
                     if ($senhaValida) {
+                        session_regenerate_id(true);
+
                         $_SESSION['logado']         = true;
                         $_SESSION['usuario_id']     = $usuario['id_usuario'];
                         $_SESSION['usuario_nome']   = $usuario['nome'];
@@ -51,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -59,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login - Ferrorama</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
 <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
@@ -71,21 +75,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form action="" method="POST">
+
         <div class="mb-3">
             <label for="email" class="form-label">E-mail</label>
-            <input type="email" name="email" id="email" class="form-control" placeholder="Digite seu e-mail" required value="<?= htmlspecialchars($_POST['email'] ?? ''); ?>">
+
+            <input
+                type="email"
+                name="email"
+                id="email"
+                class="form-control"
+                placeholder="Digite seu e-mail"
+                required
+                value="<?= htmlspecialchars($_POST['email'] ?? ''); ?>"
+            >
         </div>
 
         <div class="mb-3">
             <label for="senha" class="form-label">Senha</label>
-            <input type="password" name="senha" id="senha" class="form-control" placeholder="Digite sua senha" required>
+
+            <input
+                type="password"
+                name="senha"
+                id="senha"
+                class="form-control"
+                placeholder="Digite sua senha"
+                required
+            >
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        <button type="submit" class="btn btn-primary w-100">
+            Entrar
+        </button>
 
         <div class="text-center mt-3">
-            <small>Ainda não tem uma conta? <a href="tela-cadastro-user.php" class="text-decoration-none">Cadastrar-se</a></small>
+            <small>
+                Ainda não tem uma conta?
+                <a href="tela-cadastro-user.php" class="text-decoration-none">
+                    Cadastrar-se
+                </a>
+            </small>
         </div>
+
     </form>
 </div>
 
