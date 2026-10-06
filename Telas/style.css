@@ -1,116 +1,214 @@
 :root {
-    --azul-industrial: #0f172a;
-    --azul-card: #1e293b;
-    --laranja-ferrorama: #f97316;
-    --cinza-texto: #94a3b8;
-    --branco-neve: #f8fafc;
+    --bg-fundo: #061121;
+    --bg-card: #0b1a30;
+    --border-card: #162a4a;
+    --texto-principal: #ffffff;
+    --texto-secundario: #8ba2c0;
+    --verde-frente: #00b87c;
+    --azul-re: #1c3353;
+    --vermelho-emergencia: #ef4444;
+    --azul-slider: #2563eb;
 }
+
 body {
     font-family: 'Urbanist', sans-serif;
-    background-color: #f1f5f9;
-    color: var(--azul-industrial);
+    background-color: var(--bg-fundo);
+    color: var(--texto-principal);
     scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
 }
+
+/* NAVBAR */
 .navbar-custom {
-    background-color: var(--azul-industrial);
-    padding: 15px 0;
+    background-color: var(--bg-fundo);
+    border-bottom: 1px solid var(--border-card);
+    padding: 14px 24px;
 }
-.search-container {
-    max-width: 600px;
-    width: 100%;
-}
-.search-bar {
-    border-radius: 4px 0 0 4px;
-    border: none;
-    padding: 10px 15px;
-    width: 100%;
-    outline: none;
-}
-.btn-search {
-    background-color: var(--laranja-ferrorama);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 0 4px 4px 0;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.btn-search:hover { background-color: #ea580c; }
+
 .nav-link-custom {
-    color: var(--branco-neve) !important;
-    font-size: 0.95rem;
-    margin-right: 15px;
-    transition: 0.2s;
+    color: var(--texto-principal) !important;
+    font-size: 1.1rem;
+    transition: color 0.2s;
     cursor: pointer;
     text-decoration: none;
 }
-.nav-link-custom:hover, .nav-link-custom.active {
-    color: var(--laranja-ferrorama) !important;
+
+.nav-link-custom:hover {
+    color: #3b82f6 !important;
 }
-.hero-banner {
-    background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
-                url('https://images.unsplash.com/photo-1535961652354-923cb08225a7?auto=format&fit=crop&q=80&w=1200');
-    background-size: cover;
-    background-position: center;
-    height: 350px;
-    border-radius: 0 0 20px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-}
-.cat-card {
-    background: white;
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    color: var(--laranja-ferrorama);
-    font-size: 1.5rem;
-    transition: 0.3s;
-    cursor: pointer;
-    border: 3px solid transparent;
-}
-.cat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(249, 115, 22, 0.2);
-}
-.cat-card-active {
-    background-color: var(--laranja-ferrorama);
-    color: white;
-    border-color: rgba(255,255,255,0.5);
-    box-shadow: 0 8px 12px rgba(249, 115, 22, 0.4);
-}
-.product-card {
-    border: none;
-    border-radius: 12px;
-    transition: 0.3s;
-    overflow: hidden;
-    background: white;
-    cursor: pointer;
+
+/* CARDS DO PAINEL */
+.dashboard-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 14px;
+    padding: 22px;
     height: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
-.product-card:hover {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    transform: translateY(-3px);
+
+.card-title-custom {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--texto-principal);
+    margin-bottom: 18px;
 }
-.product-img {
-    height: 200px;
-    background-color: #f8fafc;
+
+/* SLIDER DE VELOCIDADE */
+.range-slider-custom {
+    width: 100%;
+    height: 8px;
+    background: #162947;
+    border-radius: 4px;
+    outline: none;
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+
+.speed-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--texto-principal);
+}
+
+/* BOTÕES DE SENTIDO */
+.btn-frente-style {
+    background-color: var(--verde-frente);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #cbd5e1;
+    gap: 8px;
+    transition: all 0.2s ease;
 }
-.price-tag {
-    font-size: 1.4rem;
+
+.btn-re-style {
+    background-color: var(--azul-re);
+    color: var(--texto-principal);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-frente-style.desativado {
+    background-color: var(--azul-re);
+    opacity: 0.7;
+}
+
+.btn-re-style.ativado {
+    background-color: #2563eb;
+}
+
+/* BOTÃO PARADA DE EMERGÊNCIA */
+.btn-emergencia-custom {
+    background-color: var(--vermelho-emergencia);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
     font-weight: 700;
-    color: #1e293b;
+    width: 100%;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-emergencia-custom:hover {
+    background-color: #dc2626;
+}
+
+.btn-emergencia-custom.ativo {
+    animation: piscar-emergencia 0.8s infinite alternate;
+}
+
+@keyframes piscar-emergencia {
+    from { background-color: var(--vermelho-emergencia); box-shadow: 0 0 8px var(--vermelho-emergencia); }
+    to { background-color: #991b1b; box-shadow: 0 0 22px var(--vermelho-emergencia); }
+}
+
+/* LEGENDA DO MAPA DA PISTA */
+.legend-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.legend-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #d1d5db;
+}
+
+.icon-locomotiva {
+    width: 16px;
+    height: 10px;
+    background-color: var(--vermelho-emergencia);
+    border-radius: 2px;
+}
+
+.dot-green-icon {
+    width: 12px;
+    height: 12px;
+    background-color: #10b981;
+    border-radius: 50%;
+}
+
+.dot-grey-icon {
+    width: 12px;
+    height: 12px;
+    background-color: #64748b;
+    border-radius: 50%;
+}
+
+.dot-blue-icon {
+    width: 12px;
+    height: 12px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+}
+
+/* STATUS DO SISTEMA */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--texto-principal);
+}
+
+/* POSIÇÃO DA LOCOMOTIVA */
+.posicao-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.train-icon-large {
+    font-size: 2rem;
+    color: #64748b;
 }
