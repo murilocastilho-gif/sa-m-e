@@ -39,6 +39,7 @@ CREATE TABLE produtos (
 
 INSERT INTO usuarios (nome, cpf, email, senha, perfil, status) VALUES
 
+('Murilo Guimarães', '000.000.030-00', 'murilo_castilho@estudante.sesisenai.org.br', '123456', 'Administrador', 'Ativo'),
 
 INSERT INTO sensores (nome_sensor, tipo_sensor, localizacao, status, data_instalacao) VALUES
 ('Sensor Pista A1', 'Presenca', 'Curva Norte', 'Ativo', '2026-01-15'),
