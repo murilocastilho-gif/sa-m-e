@@ -38,8 +38,9 @@ CREATE TABLE produtos (
 );
 
 INSERT INTO usuarios (nome, cpf, email, senha, perfil, status) VALUES
-
-('Murilo Guimarães', '000.000.030-00', 'murilo_castilho@estudante.sesisenai.org.br', '123456', 'Administrador', 'Ativo'),
+('Administrador do Sistema', '000.000.000-00', 'admin@ferrorama.com', '123456', 'Administrador', 'Ativo'),
+('Murilo Guimarães', '011.873.039-84', 'murilo_castilho@estudante.sesisenai.org.br', '123456', 'Administrador', 'Ativo'),
+('Joao Silva', '111.222.333-44', 'joao@email.com', '123456', 'Comprador', 'Ativo');
 
 INSERT INTO sensores (nome_sensor, tipo_sensor, localizacao, status, data_instalacao) VALUES
 ('Sensor Pista A1', 'Presenca', 'Curva Norte', 'Ativo', '2026-01-15'),
