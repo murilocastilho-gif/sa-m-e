@@ -64,3 +64,14 @@ CREATE TABLE IF NOT EXISTS trens (
     id_usuario_responsavel INT,
     FOREIGN KEY (id_usuario_responsavel) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS rotas (
+    id_rota INT AUTO_INCREMENT PRIMARY KEY,
+    nome_rota VARCHAR(100) NOT NULL,
+    origem VARCHAR(100) NOT NULL,
+    destino VARCHAR(100) NOT NULL,
+    distancia_km DECIMAL(8,2) NOT NULL,
+    tempo_estimado_min INT NOT NULL,
+    id_trem INT NOT NULL,
+    FOREIGN KEY (id_trem) REFERENCES trens(id_trem) ON DELETE RESTRICT
+);
