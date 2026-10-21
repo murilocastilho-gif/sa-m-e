@@ -54,3 +54,13 @@ INSERT INTO categorias (nome_categoria) VALUES
 INSERT INTO produtos (id_categoria, nome_produto, descricao, preco, estoque) VALUES
 (1, 'Locomotiva Maria Fumaca', 'Modelo classico em escala', 350.00, 10),
 (2, 'Kit Trilhos Curvos', 'Conjunto com 8 unidades', 85.50, 25);
+
+CREATE TABLE IF NOT EXISTS trens (
+    id_trem INT AUTO_INCREMENT PRIMARY KEY,
+    nome_trem VARCHAR(100) NOT NULL,
+    modelo VARCHAR(50) NOT NULL,
+    velocidade_maxima INT NOT NULL,
+    status VARCHAR(30) DEFAULT 'Operacional',
+    id_usuario_responsavel INT,
+    FOREIGN KEY (id_usuario_responsavel) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
+);
