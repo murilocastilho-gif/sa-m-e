@@ -1,82 +1,132 @@
-# Projeto Ferrorama - Sistema de Gestao e Monitoramento Ferroviario
+Projeto Ferrorama - Sistema de Gestão e Monitoramento Ferroviário
+Sumário
+Sobre o Projeto
 
-## 1. Sumario
-- 1. Sobre o Projeto
-- 2. Funcionalidades e Requisitos
-- 3. Arquitetura e Tecnologias
-- 4. Estrutura do Repositorio
-- 5. Pre-requisitos e Instalacao
-- 6. Configuracao do Banco de Dados
-- 7. Teste e Validacao da Conexao
-- 8. Pesquisa Teorica: PDO vs MySQLi
-- 9. Metodologia Agil e Kanban
-- 10. Padrao de Commits e Rastreabilidade
-- 11. Equipe e Contribuidores
+Funcionalidades e Requisitos
 
-## 1. Sobre o Projeto
+Arquitetura e Tecnologias
 
-O Ferrorama e um sistema web desenvolvido no contexto da Situacao de Aprendizagem do curso tecnico. A aplicacao visa realizar o controle, gerenciamento e monitoramento em tempo real de maquetes e circuitos ferroviarios automatizados, permitindo o cadastro de sensores de pista, gerenciamento de usuarios do sistema, simulacao de carrinho de compras de itens ferroviarios e controle de pecas.
+Estrutura do Repositório
 
-Na Etapa 1, o projeto foi estruturado com prototipacao estatica em HTML5, CSS3, JavaScript e documentacao em Markdown baseada na metodologia Scrum.
+Pré-requisitos e Instalação
 
-Na Etapa 2, o sistema passou por uma refatoracao tecnica, convertendo as paginas estaticas para arquivos .php, estruturando o modelo de inclusao de modulos reutilizaveis (header.php e footer.php), criando a camada de conexao com o banco de dados MySQL via extensao MySQLi e documentando um estudo teorico sobre PDO.
+Configuração do Banco de Dados
 
-## 2. Funcionalidades e Requisitos
+Controle de Acesso e Autenticação
 
-### Requisitos Funcionais (RF)
-- [RF01] Vitrine e Tela Principal (index.php): Apresentacao visual dos produtos, categorias de locomotivas e trilhos, com cabecalho responsivo e rodape dinamico.
-- [RF02] Gestao de Usuarios (tela-lista-usuarios.php): Exibicao da tabela de usuarios cadastrados no sistema com niveis de acesso (Administrador e Comprador).
-- [RF03] Gerenciamento de Sensores (tela-cadastro-sensores.php): Formulario de cadastro e listagem dinamica dos sensores de presenca, velocidade e parada instalados nos trilhos.
-- [RF04] Carrinho de Compras / Offcanvas: Painel lateral dinamico acionado pelo menu para selecao de itens e calculo do valor total.
-- [RF05] Pesquisa teorica e Documentacao Scrum: Registro dos papeis, rituais e artefatos do Scrum em docs/scrum.md, acompanhado do estudo comparativo sobre conexoes PHP em pesquisas/pdo.md.
+Pesquisas Técnicas e Acadêmicas
 
-### Requisitos Nao Funcionais (RNF)
-- [RNF01] Modularidade: Arquitetura desacoplada utilizando inclusao de cabecalhos e rodapes reutilizaveis.
-- [RNF02] Conectividade: Uso da extensao MySQLi para comunicacao segura com a base de dados.
-- [RNF03] Responsividade: Interface adaptavel para celulares, tablets e desktops via Bootstrap 5.
-- [RNF04] Rastreabilidade: Mapeamento bidirecional completo entre Requisito -> Kanban -> Codigo -> Commit.
+Metodologia Ágil e Kanban
 
-## 3. Arquitetura e Tecnologias
+Equipe e Contribuidores
 
-A aplicacao segue uma arquitetura cliente-servidor monolitica baseada no padrao modular PHP.
+1. Sobre o Projeto
+O Ferrorama é um sistema web desenvolvido no contexto da Situação de Aprendizagem do curso técnico. A aplicação realiza o controle, gerenciamento e monitoramento em tempo real de maquetes e circuitos ferroviários automatizados, integrando autenticação segura de usuários, gerenciamento de sensores de pista, cadastro completo de trens e rotas, e simulação de telemetria.
 
-### Tecnologias Utilizadas:
-- Backend: PHP 8.2 (Procedural e Modular)
-- Banco de Dados: MySQL 8.0
-- Frontend: HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3, FontAwesome 6.4
-- Controle de Versao: Git e GitHub
-- Gestao do Projeto: GitHub Projects (Kanban)
-- Servidor Local: XAMPP / WAMP / Laragon (Apache)
+Nas etapas iniciais, o projeto foi prototipado em HTML5/CSS3/JavaScript e estruturado em PHP procedural com conexões MySQLi e inclusão de componentes reutilizáveis.
 
-## 4. Estrutura do Repositorio
+Nas Etapas 6 a 9 (Fase Final), a aplicação foi consolidada com:
 
-Organizacao detalhada das pastas e arquivos do sistema:
+Autenticação de usuários reforçada por criptografia BCRYPT e sessões PHP ($_SESSION);
 
-```text
+Middleware de controle de acesso no backend (includes/auth.php) restringindo rotas administrativas ao perfil Administrador;
+
+CRUD completo de Trens e Rotas com suporte a Chaves Estrangeiras (FOREIGN KEY);
+
+Validação e simulação em tempo real para sensores IoT em JavaScript (JavaScript/sensores.js);
+
+Pesquisas acadêmicas abrangendo Scrum, PDO/MySQLi, CRUD, XAMPP e APIs RESTful (JSON, HTTP e cURL).
+
+2. Funcionalidades e Requisitos
+Requisitos Funcionais (RF)
+[RF01] Autenticação e Login (tela-login.php / verifica-login.php): Autenticação segura de usuários com validação de senha por hash BCRYPT e encerramento de sessão em logout.php.
+
+[RF02] Controle de Permissões no Backend (includes/auth.php): Proteção de rotas sensíveis; usuários do perfil Comprador/Padrão são impedidos de acessar áreas restritas do Administrador.
+
+[RF03] Gestão de Usuários (tela-lista-usuarios.php): Cadastro, edição, listagem e remoção segura de usuários do sistema.
+
+[RF04] Gestão de Trens (tela-lista-trens.php / tela-cadastro-trem.php): Cadastro e manutenção de locomotivas, velocidade máxima, modelo, status operacional e vinculação ao usuário responsável.
+
+[RF05] Gestão de Rotas (tela-lista-rotas.php / tela-cadastro-rota.php): Mapeamento de trajetos com estação de origem, destino, distância (km), tempo estimado e vinculação obrigatória a um trem.
+
+[RF06] Gerenciamento e Telemetria de Sensores (tela-lista-sensores.php): Cadastro e simulação em tempo real de leitura de sensores de presença, velocidade e temperatura via JavaScript.
+
+[RF07] Painel de Controle Ferroviário (Tela-trilho.php / tela-home.php): Dashboard para visualização geral do circuito e navegação pelos módulos do sistema.
+
+Requisitos Não Funcionais (RNF)
+[RNF01] Criptografia e Segurança: Armazenamento seguro de senhas utilizando o algoritmo BCRYPT (password_hash e password_verify).
+
+[RNF02] Prevenção contra SQL Injection: Uso rigoroso de Prepared Statements em todas as operações de consulta e escrita no MySQL.
+
+[RNF03] Integridade Referencial: Relacionamentos no banco de dados protegidos por Foreign Keys (usuarios -> trens -> rotas).
+
+[RNF04] Modularidade: Componentes reutilizáveis em PHP (cabecalho.php, rodape.php, conexao.php, auth.php).
+
+[RNF05] Rastreabilidade: Cobertura de 100% das tarefas no GitHub Projects (Kanban) mapeadas para os commits correspondentes.
+
+3. Arquitetura e Tecnologias
+A aplicação utiliza uma arquitetura cliente-servidor monolítica baseada no padrão modular PHP.
+
+Backend: PHP 8.2 (Procedural e Modular com $_SESSION e Prepared Statements)
+
+Banco de Dados: MySQL 8.0 (MySQLi com relatórios de exceção e Foreign Keys)
+
+Frontend: HTML5, CSS3, JavaScript (ES6+ assíncrono para sensores)
+
+Segurança: Criptografia BCRYPT e Middleware Backend de Autorização
+
+Controle de Versão: Git e GitHub
+
+Gestão do Projeto: GitHub Projects (Kanban)
+
+Servidor Local: XAMPP (Apache + MariaDB/MySQL)
+
+4. Estrutura do Repositório
+Organização padronizada das pastas e arquivos do sistema:
+
 ferrorama/
 │
-├── assets/                  # Arquivos estaticos do sistema
-│   ├── js/                  # Scripts JavaScript
-│   │   └── sensores.js      # Manipulacao dinamica da tabela de sensores
-│   └── style/               # Estilos CSS customizados
-│       └── style.css        # Regras de estilo globais do Ferrorama
+├── documentação/                 # Documentação técnica e pesquisas acadêmicas
+│   ├── pesquisa-apis.md          # Estudo técnico sobre APIs REST, JSON, Métodos HTTP e cURL
+│   ├── pesquisa-crud.md          # Fundamentos das operações de CRUD
+│   ├── pesquisa-pdo.md           # Estudo comparativo PDO vs MySQLi
+│   ├── pesquisa-scrum.md         # Framework Ágil Scrum e seus rituais
+│   └── pesquisa-xampp.md         # Configuração do ambiente local
 │
-├── config/                  # Arquivos de configuracao do servidor
-│   └── conexao.php          # Script de conexao MySQLi com tratamento de erro
+├── includes/                     # Middlewares e funções de segurança
+│   └── auth.php                  # Funções de proteção de rota e autenticação
 │
-├── docs/                    # Documentacao do projeto
-│   └── scrum.md             # Pesquisa sobre a metodologia agil Scrum
+├── JavaScript/                   # Scripts e comportamentos dinâmicos
+│   └── sensores.js               # Validação de formulários e simulação de leitura em tempo real
 │
-├── includes/                # Componentes reutilizaveis PHP
-│   ├── footer.php           # Rodape padrao e inclusao de scripts
-│   └── header.php           # Cabecalho, navegacao e inclusao de CSS
+├── Telas/                        # Interfaces de usuário e scripts de processamento
+│   ├── cabecalho.php             # Cabeçalho responsivo com exibição do perfil e logout
+│   ├── conexao.php               # Estabelecimento de conexão MySQLi
+│   ├── painel-admin.php          # Tela de teste e verificação de acesso exclusivo de Admin
+│   ├── processa-exclusao-rota.php# Script de remoção de rotas
+│   ├── processa-exclusao-trem.php# Script de remoção de trens (com validação de dependências)
+│   ├── processa-exclusao-user.php# Script de remoção de usuários
+│   ├── processa-salvar-rota.php  # Processamento de cadastro e edição de rotas
+│   ├── processa-salvar-trem.php  # Processamento de cadastro e edição de trens
+│   ├── rodape.php                # Rodapé padrão do sistema
+│   ├── style.css                 # Folha de estilos globais
+│   ├── tela-cadastro-rota.php    # Formulário para inclusão e alteração de rotas
+│   ├── tela-cadastro-sensor.php  # Formulário para inclusão de sensores
+│   ├── tela-cadastro-trem.php    # Formulário para inclusão e alteração de trens
+│   ├── tela-cadastro-user.php    # Formulário para inclusão de usuários
+│   ├── tela-editar-user.php      # Edição de dados do usuário
+│   ├── tela-home.php             # Dashboard principal
+│   ├── tela-lista-rotas.php      # Tabela com listagem das rotas cadastradas
+│   ├── tela-lista-sensores.php   # Tabela e monitor de sensores
+│   ├── tela-lista-trens.php      # Tabela com listagem dos trens cadastrados
+│   ├── tela-lista-usuarios.php   # Tabela de gestão de usuários
+│   ├── tela-login.php            # Formulário de autenticação do sistema
+│   ├── Tela-trilho.php           # Painel de controle do circuito
+│   └── verifica-login.php        # Processamento e validação de login BCRYPT
 │
-├── pesquisas/               # Estudos tecnicos do curso
-│   └── pdo.md               # Pesquisa aprofundada sobre a extensao PDO
-│
-├── index.php                # Pagina inicial do sistema (Home/Vitrine)
-├── tela-cadastro-sensores.php # Pagina de cadastro e gestao de sensores
-├── tela-lista-usuarios.php    # Pagina de visualizacao de usuarios
-├── teste-conexao.php        # Pagina de validacao do status do banco
-├── README.md                # Documentacao tecnica principal do repositorio
-└── .gitignore               # Arquivos ignorados pelo controle de versao
+├── Banco.sql                     # Script de criação do banco e tabelas (Usuários, Trens, Rotas)
+├── atualizar_senhas.php          # Script utilitário para migração de senhas em texto puro para BCRYPT
+├── index.php                     # Ponto de entrada do sistema
+├── logout.php                    # Destruição de sessão e redirecionamento para o login
+├── LICENSE                       # Licença de uso do software
+└── README.md                     # Documentação principal do repositório
