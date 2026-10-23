@@ -25,42 +25,13 @@ if (!isset($conexao) || !($conexao instanceof mysqli)) {
     }
 }
 
-$id_trem           = null;
-$nome_trem         = '';
-$modelo            = '';
+$id_trem = null;
+$nome_trem = '';
+$modelo = '';
 $velocidade_maxima = 80;
-$status            = 'Operacional';
-$modoEdicao        = false;
-$erro              = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_trem           = !empty($_POST['id_trem']) ? (int)$_POST['id_trem'] : null;
-    $nome_trem         = trim($_POST['nome_trem'] ?? '');
-    $modelo            = trim($_POST['modelo'] ?? '');
-    $velocidade_maxima = (int)($_POST['velocidade_maxima'] ?? 80);
-    $status            = trim($_POST['status'] ?? 'Operacional');
-
-    if (empty($nome_trem)) {
-        $erro = "Preencha o nome da locomotiva.";
-    } else {
-        if ($id_trem) {
-            $stmt = $conexao->prepare("UPDATE trens SET nome_trem = ?, modelo = ?, velocidade_maxima = ?, status = ? WHERE id_trem = ?");
-            if ($stmt) {
-                $stmt->bind_param("ssisi", $nome_trem, $modelo, $velocidade_maxima, $status, $id_trem);
-                $stmt->execute();
-            }
-        } else {
-            $stmt = $conexao->prepare("INSERT INTO trens (nome_trem, modelo, velocidade_maxima, status) VALUES (?, ?, ?, ?)");
-            if ($stmt) {
-                $stmt->bind_param("ssis", $nome_trem, $modelo, $velocidade_maxima, $status);
-                $stmt->execute();
-            }
-        }
-
-        header('Location: tala-lista-de-trens.php');
-        exit();
-    }
-}
+$status = 'Em Operação';
+$modoEdicao = false;
+$erro = '';
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_trem = (int)$_GET['id'];
@@ -71,11 +42,58 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $res = $stmt->get_result();
         if ($res && $res->num_rows === 1) {
             $dados = $res->fetch_assoc();
-            $nome_trem         = $dados['nome_trem'];
-            $modelo            = $dados['modelo'] ?? '';
+            $nome_trem = $dados['nome_trem'] ?? '';
+            $modelo = $dados['modelo'] ?? '';
             $velocidade_maxima = $dados['velocidade_maxima'] ?? 80;
-            $status            = $dados['status'] ?? 'Operacional';
-            $modoEdicao        = true;
+            $status = $dados['status'] ?? 'Em Operação';
+            $modoEdicao = true;
+        }
+        $stmt->close();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_trem = !empty($_POST['id_trem']) ? (int)$_POST['id_trem'] : null;
+    $nome_trem = trim($_POST['nome_trem'] ?? '');
+    $modelo = trim($_POST['modelo'] ?? '');
+    $velocidade_maxima = (int)($_POST['velocidade_maxima'] ?? 80);
+    $status = trim($_POST['status'] ?? 'Em Operação');
+
+    if ($id_trem) {
+        $modoEdicao = true;
+    }
+
+    if (empty($nome_trem)) {
+        $erro = "Preencha o nome da locomotiva.";
+    } else {
+        if ($id_trem) {
+            $stmt = $conexao->prepare("UPDATE trens SET nome_trem = ?, modelo = ?, velocidade_maxima = ?, status = ? WHERE id_trem = ?");
+            if ($stmt) {
+                $stmt->bind_param("ssisi", $nome_trem, $modelo, $velocidade_maxima, $status, $id_trem);
+                if ($stmt->execute()) {
+                    header('Location: tela-lista-de-trens.php');
+                    exit();
+                } else {
+                    $erro = "Erro ao atualizar locomotiva: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                $erro = "Erro na consulta de atualização: " . $conexao->error;
+            }
+        } else {
+            $stmt = $conexao->prepare("INSERT INTO trens (nome_trem, modelo, velocidade_maxima, status) VALUES (?, ?, ?, ?)");
+            if ($stmt) {
+                $stmt->bind_param("ssis", $nome_trem, $modelo, $velocidade_maxima, $status);
+                if ($stmt->execute()) {
+                    header('Location: tela-lista-de-trens.php');
+                    exit();
+                } else {
+                    $erro = "Erro ao cadastrar locomotiva: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                $erro = "Erro na consulta de inserção: " . $conexao->error;
+            }
         }
     }
 }
@@ -92,7 +110,6 @@ require_once __DIR__ . '/cabecalho.php';
                     <?php echo $modoEdicao ? 'Editar Locomotiva' : 'Cadastrar Nova Locomotiva'; ?>
                 </h4>
             </div>
-
             <div class="card-body p-4">
                 <?php if (!empty($erro)): ?>
                     <div class="alert alert-danger py-2 mb-3"><?php echo htmlspecialchars($erro); ?></div>
@@ -120,17 +137,17 @@ require_once __DIR__ . '/cabecalho.php';
                         </div>
 
                         <div class="col-md-6">
-                            <label for="status" class="form-label fw-semibold">Status Operacional</label>
+                            <label for="status" class="form-label fw-semibold">Status</label>
                             <select id="status" name="status" class="form-select">
-                                <option value="Operacional" <?php echo ($status === 'Operacional') ? 'selected' : ''; ?>>Operacional</option>
-                                <option value="Manutenção" <?php echo ($status === 'Manutenção') ? 'selected' : ''; ?>>Manutenção</option>
+                                <option value="Em Operação" <?php echo ($status === 'Em Operação' || $status === 'Operacional') ? 'selected' : ''; ?>>Operacional</option>
+                                <option value="Em Manutenção" <?php echo ($status === 'Em Manutenção' || $status === 'Manutenção') ? 'selected' : ''; ?>>Manutenção</option>
                                 <option value="Inativo" <?php echo ($status === 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <a href="tala-lista-de-trens.php" class="btn btn-outline-secondary px-4 fw-semibold">Cancelar</a>
+                        <a href="tela-lista-de-trens.php" class="btn btn-outline-secondary px-4 fw-semibold">Cancelar</a>
                         <button type="submit" class="btn btn-primary px-4 fw-semibold">
                             <i class="fa-solid fa-floppy-disk me-1"></i>
                             <?php echo $modoEdicao ? 'Salvar Alterações' : 'Cadastrar Trem'; ?>

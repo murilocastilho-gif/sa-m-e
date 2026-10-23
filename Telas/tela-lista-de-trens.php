@@ -85,19 +85,44 @@ $resultado = ($conexao && !$conexao->connect_error) ? $conexao->query($sql) : fa
                             <tr>
                                 <td class="ps-4 fw-bold text-secondary">#<?php echo $trem['id_trem']; ?></td>
                                 <td>
-                                    <span class="fw-bold text-dark"><i class="fa-solid fa-locomotive text-primary me-2"></i><?php echo htmlspecialchars($trem['nome_trem']); ?></span>
-                                </td>
-                                <td><span class="badge bg-light text-dark border"><?php echo htmlspecialchars($trem['modelo'] ?? 'Locomotiva Padrão'); ?></span></td>
-                                <td class="fw-semibold text-dark">
-                                    <i class="fa-solid fa-gauge-high text-info me-1"></i> <?php echo htmlspecialchars($trem['velocidade_maxima'] ?? '80'); ?> km/h
+                                    <span class="fw-bold text-dark">
+                                        <i class="fa-solid fa-train text-primary me-2"></i><?php echo htmlspecialchars($trem['nome_trem']); ?>
+                                    </span>
                                 </td>
                                 <td>
-                                    <?php 
-                                        $status = $trem['status'] ?? 'Operacional';
-                                        $bgClass = ($status === 'Operacional') ? 'bg-success' : (($status === 'Manutenção') ? 'bg-warning text-dark' : 'bg-secondary');
+                                    <span class="badge bg-light text-dark border">
+                                        <?php echo htmlspecialchars(!empty($trem['modelo']) ? $trem['modelo'] : 'Locomotiva Padrão'); ?>
+                                    </span>
+                                </td>
+                                <td class="fw-semibold text-dark">
+                                    <i class="fa-solid fa-gauge-high text-info me-1"></i>
+                                    <?php echo htmlspecialchars(!empty($trem['velocidade_maxima']) ? $trem['velocidade_maxima'] : '80'); ?> km/h
+                                </td>
+                                <td>
+                                    <?php
+                                        $rawStatus = trim($trem['status'] ?? '');
+                                        if (empty($rawStatus)) {
+                                            $statusExibicao = 'Em Operação';
+                                        } else {
+                                            $statusExibicao = $rawStatus;
+                                        }
+
+                                        if ($statusExibicao === 'Operacional' || $statusExibicao === 'Em Operação') {
+                                            $statusExibicao = 'Em Operação';
+                                            $bgClass = 'bg-success';
+                                        } elseif ($statusExibicao === 'Manutenção' || $statusExibicao === 'Em Manutenção') {
+                                            $statusExibicao = 'Em Manutenção';
+                                            $bgClass = 'bg-warning text-dark';
+                                        } elseif ($statusExibicao === 'Inativo') {
+                                            $statusExibicao = 'Inativo';
+                                            $bgClass = 'bg-danger';
+                                        } else {
+                                            $bgClass = 'bg-secondary';
+                                        }
                                     ?>
                                     <span class="badge <?php echo $bgClass; ?> px-3 py-2 rounded-pill">
-                                        <i class="fa-solid fa-circle me-1 small"></i> <?php echo htmlspecialchars($status); ?>
+                                        <i class="fa-solid fa-circle me-1 small"></i>
+                                        <?php echo htmlspecialchars($statusExibicao); ?>
                                     </span>
                                 </td>
                                 <?php if ($ehAdmin): ?>
