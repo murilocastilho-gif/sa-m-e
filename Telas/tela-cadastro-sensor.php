@@ -25,44 +25,14 @@ if (!isset($conexao) || !($conexao instanceof mysqli)) {
     }
 }
 
-$id_sensor     = null;
-$nome_sensor   = '';
+$id_sensor = null;
+$nome_sensor = '';
 $identificacao = '';
-$tipo_sensor   = 'Presença';
-$localizacao   = '';
-$status        = 'Ativo';
-$modoEdicao    = false;
-$erro          = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_sensor     = !empty($_POST['id_sensor']) ? (int)$_POST['id_sensor'] : null;
-    $nome_sensor   = trim($_POST['nome_sensor'] ?? '');
-    $identificacao = trim($_POST['identificacao'] ?? '');
-    $tipo_sensor   = trim($_POST['tipo_sensor'] ?? 'Presença');
-    $localizacao   = trim($_POST['localizacao'] ?? '');
-    $status        = trim($_POST['status'] ?? 'Ativo');
-
-    if (empty($nome_sensor) || empty($identificacao) || empty($localizacao)) {
-        $erro = "Por favor, preencha todos os campos obrigatórios (Nome, Identificação e Localização).";
-    } else {
-        if ($id_sensor) {
-            $stmt = $conexao->prepare("UPDATE sensores SET nome_sensor = ?, identificacao = ?, tipo_sensor = ?, localizacao = ?, status = ? WHERE id_sensor = ?");
-            if ($stmt) {
-                $stmt->bind_param("sssssi", $nome_sensor, $identificacao, $tipo_sensor, $localizacao, $status, $id_sensor);
-                $stmt->execute();
-            }
-        } else {
-            $stmt = $conexao->prepare("INSERT INTO sensores (nome_sensor, identificacao, tipo_sensor, localizacao, status) VALUES (?, ?, ?, ?, ?)");
-            if ($stmt) {
-                $stmt->bind_param("sssss", $nome_sensor, $identificacao, $tipo_sensor, $localizacao, $status);
-                $stmt->execute();
-            }
-        }
-
-        header('Location: tela-lista-sensores.php?sucesso=salvo');
-        exit();
-    }
-}
+$tipo_sensor = 'Presença';
+$localizacao = '';
+$status = 'Ativo';
+$modoEdicao = false;
+$erro = '';
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_sensor = (int)$_GET['id'];
@@ -73,12 +43,60 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $res = $stmt->get_result();
         if ($res && $res->num_rows === 1) {
             $dados = $res->fetch_assoc();
-            $nome_sensor   = $dados['nome_sensor'] ?? $dados['nome'] ?? '';
-            $identificacao = $dados['identificacao'] ?? '';
-            $tipo_sensor   = $dados['tipo_sensor'] ?? $dados['tipo'] ?? 'Presença';
-            $localizacao   = $dados['localizacao'] ?? '';
-            $status        = $dados['status'] ?? 'Ativo';
-            $modoEdicao    = true;
+            $tipo_sensor = $dados['tipo_sensor'] ?? $dados['tipo'] ?? 'Presença';
+            $localizacao = $dados['localizacao'] ?? '';
+            $status = $dados['status'] ?? 'Ativo';
+            $nome_sensor = $dados['nome_sensor'] ?? $dados['nome'] ?? ('Sensor ' . $tipo_sensor);
+            $identificacao = $dados['identificacao'] ?? ('SNS-' . $id_sensor);
+            $modoEdicao = true;
+        }
+        $stmt->close();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_sensor = !empty($_POST['id_sensor']) ? (int)$_POST['id_sensor'] : null;
+    $nome_sensor = trim($_POST['nome_sensor'] ?? '');
+    $identificacao = trim($_POST['identificacao'] ?? '');
+    $tipo_sensor = trim($_POST['tipo_sensor'] ?? 'Presença');
+    $localizacao = trim($_POST['localizacao'] ?? '');
+    $status = trim($_POST['status'] ?? 'Ativo');
+
+    if ($id_sensor) {
+        $modoEdicao = true;
+    }
+
+    if (empty($nome_sensor) || empty($identificacao) || empty($localizacao)) {
+        $erro = "Por favor, preencha todos os campos obrigatórios (Nome, Identificação e Localização).";
+    } else {
+        if ($id_sensor) {
+            $stmt = $conexao->prepare("UPDATE sensores SET tipo = ?, localizacao = ?, status = ? WHERE id_sensor = ?");
+            if ($stmt) {
+                $stmt->bind_param("sssi", $tipo_sensor, $localizacao, $status, $id_sensor);
+                if ($stmt->execute()) {
+                    header('Location: tela-lista-sensores.php?sucesso=salvo');
+                    exit();
+                } else {
+                    $erro = "Erro ao atualizar sensor: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                $erro = "Erro na consulta de atualização: " . $conexao->error;
+            }
+        } else {
+            $stmt = $conexao->prepare("INSERT INTO sensores (tipo, localizacao, status) VALUES (?, ?, ?)");
+            if ($stmt) {
+                $stmt->bind_param("sss", $tipo_sensor, $localizacao, $status);
+                if ($stmt->execute()) {
+                    header('Location: tela-lista-sensores.php?sucesso=salvo');
+                    exit();
+                } else {
+                    $erro = "Erro ao cadastrar sensor: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                $erro = "Erro na consulta de inserção: " . $conexao->error;
+            }
         }
     }
 }
@@ -95,7 +113,6 @@ require_once __DIR__ . '/cabecalho.php';
                     <?php echo $modoEdicao ? 'Editar Sensor' : 'Cadastrar Novo Sensor'; ?>
                 </h4>
             </div>
-
             <div class="card-body p-4">
                 <?php if (!empty($erro)): ?>
                     <div class="alert alert-danger d-flex align-items-center py-3 mb-3 rounded-3" role="alert">
@@ -134,14 +151,14 @@ require_once __DIR__ . '/cabecalho.php';
                     <div class="row g-3 mb-4">
                         <div class="col-md-8">
                             <label for="localizacao" class="form-label fw-semibold">Localização / Trecho <span class="text-danger">*</span></label>
-                            <input type="text" id="localizacao" name="localizacao" class="form-control" required placeholder="Ex: Km 12 - Cruzamento Sul" value="<?php echo htmlspecialchars($localizacao); ?>">
+                            <input type="text" id="localizacao" name="localizacao" class="form-control" required placeholder="Ex: Km 12 Cruzamento Sul" value="<?php echo htmlspecialchars($localizacao); ?>">
                         </div>
                         <div class="col-md-4">
                             <label for="status" class="form-label fw-semibold">Status Operacional</label>
                             <select id="status" name="status" class="form-select">
                                 <option value="Ativo" <?php echo ($status === 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
                                 <option value="Inativo" <?php echo ($status === 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
-                                <option value="Manutenção" <?php echo ($status === 'Manutenção') ? 'selected' : ''; ?>>Manutenção</option>
+                                <option value="Em Manutenção" <?php echo ($status === 'Em Manutenção' || $status === 'Manutenção') ? 'selected' : ''; ?>>Manutenção</option>
                             </select>
                         </div>
                     </div>
