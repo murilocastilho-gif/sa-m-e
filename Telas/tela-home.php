@@ -1,90 +1,245 @@
 <?php
-require_once 'auth.php';
-exigirAutenticacao();
-
-require_once 'conexao.php';
-require_once 'cabecalho.php';
-
-$ehAdmin = isset($_SESSION['perfil']) && $_SESSION['perfil'] === 'Administrador';
-
-$totalUsuarios = 0;
-$totalTrens = 0;
-$totalRotas = 0;
-$totalSensores = 0;
-
-$resU = $conexao->query("SELECT COUNT(*) as total FROM usuarios");
-if ($resU) { $totalUsuarios = $resU->fetch_assoc()['total']; }
-
-$resT = $conexao->query("SELECT COUNT(*) as total FROM trens");
-if ($resT) { $totalTrens = $resT->fetch_assoc()['total']; }
-
-$resR = $conexao->query("SELECT COUNT(*) as total FROM rotas");
-if ($resR) { $totalRotas = $resR->fetch_assoc()['total']; }
-
-$resS = $conexao->query("SHOW TABLES LIKE 'sensores'");
-if ($resS && $resS->num_rows > 0) {
-    $resSen = $conexao->query("SELECT COUNT(*) as total FROM sensores");
-    if ($resSen) { $totalSensores = $resSen->fetch_assoc()['total']; }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-$sqlRotas = "SELECT r.*, t.nome_trem, t.status AS status_trem 
-             FROM rotas r 
-             INNER JOIN trens t ON r.id_trem = t.id_trem 
-             ORDER BY r.id_rota DESC";
-$resultadoRotas = $conexao->query($sqlRotas);
+if (!isset($_SESSION['id_usuario']) || empty($_SESSION['id_usuario'])) {
+    header('Location: tela-login.php');
+    exit();
+}
+
+require_once __DIR__ . '/conexao.php';
+
+if (!isset($conexao) || !($conexao instanceof mysqli)) {
+    if (isset($conn) && $conn instanceof mysqli) {
+        $conexao = $conn;
+    } elseif (isset($mysqli) && $mysqli instanceof mysqli) {
+        $conexao = $mysqli;
+    } else {
+        $conexao = @new mysqli('localhost', 'root', '', 'ferrorama');
+    }
+}
+
+require_once __DIR__ . '/cabecalho.php';
+
+$nomeUsuario   = $_SESSION['nome'] ?? 'Operador';
+$perfilUsuario = $_SESSION['perfil'] ?? 'Usuario';
+$ehAdmin       = (strcasecmp($perfilUsuario, 'Administrador') === 0);
+
+$totalUsuarios = 0;
+$totalTrens    = 0;
+$totalRotas    = 0;
+$totalSensores = 0;
+
+if ($conexao && !$conexao->connect_error) {
+    if ($ehAdmin) {
+        if ($resT = $conexao->query("SELECT COUNT(*) as total FROM trens")) { $totalTrens = $resT->fetch_assoc()['total']; }
+        if ($resR = $conexao->query("SELECT COUNT(*) as total FROM rotas")) { $totalRotas = $resR->fetch_assoc()['total']; }
+        if ($resU = $conexao->query("SELECT COUNT(*) as total FROM usuarios")) { $totalUsuarios = $resU->fetch_assoc()['total']; }
+
+        $resS = $conexao->query("SHOW TABLES LIKE 'sensores'");
+        if ($resS && $resS->num_rows > 0) {
+            if ($resSen = $conexao->query("SELECT COUNT(*) as total FROM sensores")) { $totalSensores = $resSen->fetch_assoc()['total']; }
+        }
+    }
+
+    $sqlRotas = "SELECT r.*, t.nome_trem, t.status AS status_trem 
+                 FROM rotas r 
+                 LEFT JOIN trens t ON r.id_trem = t.id_trem 
+                 ORDER BY r.id_rota DESC LIMIT 6";
+    $resultadoRotas = $conexao->query($sqlRotas);
+} else {
+    $resultadoRotas = false;
+}
 ?>
 
-<div class="main-container">
-    <div class="dashboard-header">
-        <h1 class="dashboard-title">Painel Geral de Controle Ferroviário</h1>
-        <p class="dashboard-subtitle">Central de gerenciamento, controle de rotas e telemetria do Ferrorama.</p>
-    </div>
+<style>
+    .hero-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 18px;
+        color: #ffffff;
+        padding: 32px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+        border: 1px solid #334155;
+        margin-bottom: 32px;
+    }
 
-    <div class="grid-stats">
-        <div class="card-stat stat-blue">
-            <div class="card-stat-title">Trens Cadastrados</div>
-            <div class="card-stat-value"><?php echo $totalTrens; ?></div>
+    .hero-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .card-metric {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .metric-icon-box {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .metric-number {
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+
+    .metric-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #64748b;
+    }
+
+    .card-admin-module {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.25s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+    }
+</style>
+
+<div class="hero-banner d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <div class="hero-title mb-1">
+            <i class="fa-solid fa-house-user text-info me-2"></i> 
+            <?php echo $ehAdmin ? 'Painel Geral de Controle' : 'Central de Consultas Ferroviárias'; ?>
         </div>
-
-        <div class="card-stat stat-green">
-            <div class="card-stat-title">Rotas Mapeadas</div>
-            <div class="card-stat-value"><?php echo $totalRotas; ?></div>
-        </div>
-
-        <div class="card-stat stat-yellow">
-            <div class="card-stat-title">Sensores Ativos</div>
-            <div class="card-stat-value"><?php echo $totalSensores; ?></div>
-        </div>
-
-        <div class="card-stat stat-cyan">
-            <div class="card-stat-title">Usuários Registrados</div>
-            <div class="card-stat-value"><?php echo $totalUsuarios; ?></div>
-        </div>
-    </div>
-
-    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 40px;">
-        <div class="page-header" style="margin-bottom: 15px;">
-            <div>
-                <h2 style="margin: 0; color: #2c3e50;">🗺️ Controle Operacional de Rotas</h2>
-                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Monitoramento dos trechos ativos e trens vinculados.</p>
-            </div>
+        <p class="mb-0 text-slate-300 opacity-75">
+            Bem-vindo(a), <strong><?php echo htmlspecialchars($nomeUsuario); ?></strong>.
             <?php if ($ehAdmin): ?>
-                <a href="tela-cadastro-rota.php" class="btn-add">+ Nova Rota</a>
+                Você possui privilégios de <span class="badge bg-danger">Administrador</span> do sistema.
+            <?php else: ?>
+                Consulte aqui as rotas e os trechos ferroviários disponíveis no Ferrorama.
             <?php endif; ?>
+        </p>
+    </div>
+
+    <?php if ($ehAdmin): ?>
+        <div class="d-flex gap-2">
+            <a href="tela-cadastro-user.php" class="btn btn-outline-light rounded-3 fw-semibold">
+                <i class="fa-solid fa-user-plus me-1"></i> Cadastrar Usuário
+            </a>
+            <a href="tela-cadastro-rota.php" class="btn btn-info text-white rounded-3 fw-semibold">
+                <i class="fa-solid fa-circle-plus me-1"></i> Nova Rota
+            </a>
+        </div>
+    <?php else: ?>
+        <a href="tela-tela-lista-rotas.php" class="btn btn-info text-white rounded-3 fw-semibold px-4 py-2">
+            <i class="fa-solid fa-magnifying-glass me-2"></i> Ver Todas as Rotas
+        </a>
+    <?php endif; ?>
+</div>
+
+<?php if ($ehAdmin): ?>
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-metric">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="metric-label">Trens Cadastrados</div>
+                        <div class="metric-number mt-1"><?php echo $totalTrens; ?></div>
+                    </div>
+                    <div class="metric-icon-box bg-primary-subtle text-primary">
+                        <i class="fa-solid fa-train"></i>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome da Rota</th>
-                    <th>Origem → Destino</th>
-                    <th>Distância</th>
-                    <th>Tempo Est.</th>
-                    <th>Trem Vinculado</th>
-                    <th>Status do Trem</th>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-metric">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="metric-label">Rotas Mapeadas</div>
+                        <div class="metric-number mt-1"><?php echo $totalRotas; ?></div>
+                    </div>
+                    <div class="metric-icon-box bg-success-subtle text-success">
+                        <i class="fa-solid fa-route"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-metric">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="metric-label">Sensores Ativos</div>
+                        <div class="metric-number mt-1"><?php echo $totalSensores; ?></div>
+                    </div>
+                    <div class="metric-icon-box bg-warning-subtle text-warning-emphasis">
+                        <i class="fa-solid fa-tower-observation"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-metric">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="metric-label">Usuários Cadastrados</div>
+                        <div class="metric-number mt-1"><?php echo $totalUsuarios; ?></div>
+                    </div>
+                    <div class="metric-icon-box bg-info-subtle text-info">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<div class="table-card mb-5">
+    <div class="p-4 border-bottom bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-route text-primary me-2"></i>Rotas Disponíveis</h5>
+            <p class="text-muted small mb-0">Confira a lista de linhas e trajetos operacionais.</p>
+        </div>
+        <a href="tela-tela-lista-rotas.php" class="btn btn-outline-secondary btn-sm rounded-3 fw-semibold">
+            Ver Lista Completa <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr class="text-secondary small fw-bold">
+                    <th class="ps-4">ID</th>
+                    <th>NOME DA ROTA</th>
+                    <th>ORIGEM ➔ DESTINO</th>
+                    <th>DISTÂNCIA</th>
+                    <th>TEMPO EST.</th>
+                    <th>TREM ATRIBUÍDO</th>
                     <?php if ($ehAdmin): ?>
-                        <th>Ações</th>
+                        <th class="text-end pe-4">AÇÕES</th>
                     <?php endif; ?>
                 </tr>
             </thead>
@@ -92,72 +247,116 @@ $resultadoRotas = $conexao->query($sqlRotas);
                 <?php if ($resultadoRotas && $resultadoRotas->num_rows > 0): ?>
                     <?php while ($rota = $resultadoRotas->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo $rota['id_rota']; ?></td>
-                            <td><strong><?php echo htmlspecialchars($rota['nome_rota']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($rota['origem']); ?> ➔ <?php echo htmlspecialchars($rota['destino']); ?></td>
-                            <td><?php echo number_format($rota['distancia_km'], 2, ',', '.'); ?> km</td>
-                            <td><?php echo $rota['tempo_estimado_min']; ?> min</td>
-                            <td>🚂 <?php echo htmlspecialchars($rota['nome_trem']); ?></td>
+                            <td class="ps-4 fw-bold text-secondary">#<?php echo $rota['id_rota']; ?></td>
+                            <td class="fw-bold text-dark"><?php echo htmlspecialchars($rota['nome_rota']); ?></td>
                             <td>
-                                <span class="badge-perfil" style="background-color: <?php echo ($rota['status_trem'] === 'Operacional') ? '#28a745' : '#ffc107'; ?>;">
-                                    <?php echo htmlspecialchars($rota['status_trem']); ?>
+                                <span class="badge bg-light text-dark border">
+                                    <?php echo htmlspecialchars($rota['origem']); ?> 
+                                    <i class="fa-solid fa-arrow-right-long text-primary mx-1"></i> 
+                                    <?php echo htmlspecialchars($rota['destino']); ?>
                                 </span>
                             </td>
+                            <td class="fw-medium"><?php echo number_format($rota['distancia_km'], 1, ',', '.'); ?> km</td>
+                            <td class="fw-medium"><i class="fa-regular fa-clock text-muted me-1"></i><?php echo $rota['tempo_estimado_min']; ?> min</td>
+                            <td>
+                                <?php if (!empty($rota['nome_trem'])): ?>
+                                    <span class="text-dark fw-semibold"><i class="fa-solid fa-train text-secondary me-1"></i><?php echo htmlspecialchars($rota['nome_trem']); ?></span>
+                                <?php else: ?>
+                                    <span class="text-muted fst-italic">Nenhum trem vinculado</span>
+                                <?php endif; ?>
+                            </td>
                             <?php if ($ehAdmin): ?>
-                                <td>
-                                    <a href="tela-cadastro-rota.php?id=<?php echo $rota['id_rota']; ?>" class="btn-action-edit">Editar</a>
-                                    <a href="tela-exclusao-rota.php?id=<?php echo $rota['id_rota']; ?>" onclick="return confirm('Deseja realmente excluir esta rota?');" class="btn-action-delete">Excluir</a>
+                                <td class="text-end pe-4">
+                                    <a href="tela-cadastro-rota.php?id=<?php echo $rota['id_rota']; ?>" class="btn btn-light btn-sm text-primary me-1 border" title="Editar">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <a href="tela-exclusao-rota.php?id=<?php echo $rota['id_rota']; ?>" onclick="return confirm('Deseja realmente excluir esta rota?');" class="btn btn-light btn-sm text-danger border" title="Excluir">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </a>
                                 </td>
                             <?php endif; ?>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="<?php echo $ehAdmin ? '8' : '7'; ?>" class="table-empty">Nenhuma rota cadastrada no momento.</td>
+                        <td colspan="<?php echo $ehAdmin ? '7' : '6'; ?>" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-secondary"></i>
+                            Nenhuma rota registrada até o momento.
+                        </td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
-
-    <!-- MÓDULOS DE ACESSO RÁPIDO (APENAS PARA ADMINISTRADORES) -->
-    <?php if ($ehAdmin): ?>
-        <h2 class="section-title">Módulos de Gestão Administrativa</h2>
-
-        <div class="grid-modules">
-            <div class="card-module">
-                <div>
-                    <h3 class="module-title">🚂 Gestão de Trens</h3>
-                    <p class="module-text">Cadastre locomotivas, controle velocidades máximas e status operacional.</p>
-                </div>
-                <a href="tala-lista-de-trens.php" class="btn-module btn-blue">Gerenciar Trens</a>
-            </div>
-
-            <div class="card-module">
-                <div>
-                    <h3 class="module-title">🗺️ Gerenciador de Rotas</h3>
-                    <p class="module-text">Acesse a listagem completa de rotas e relatórios detalhados.</p>
-                </div>
-                <a href="tela-tela-lista-rotas.php" class="btn-module btn-green">Ver Todas as Rotas</a>
-            </div>
-
-            <div class="card-module">
-                <div>
-                    <h3 class="module-title">📡 Telemetria e Sensores</h3>
-                    <p class="module-text">Acompanhe o monitoramento de sensores de presença e velocidade.</p>
-                </div>
-                <a href="tela-lista-sensores.php" class="btn-module btn-yellow">Monitorar Sensores</a>
-            </div>
-
-            <div class="card-module">
-                <div>
-                    <h3 class="module-title">👤 Gestão de Usuários</h3>
-                    <p class="module-text">Controle de utilizadores e permissões de acesso ao sistema.</p>
-                </div>
-                <a href="tela-lista-usuarios.php" class="btn-module btn-purple">Gerenciar Usuários</a>
-            </div>
-        </div>
-    <?php endif; ?>
 </div>
 
-<?php require_once 'rodape.php'; ?>
+<?php if ($ehAdmin): ?>
+    <div class="mb-4">
+        <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-cubes-stacked text-primary me-2"></i>Módulos Administrativos</h5>
+        <p class="text-muted small">Acesso rápido aos painéis de gerenciamento do Ferrorama.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card-admin-module">
+                <div>
+                    <div class="metric-icon-box bg-primary-subtle text-primary mb-3">
+                        <i class="fa-solid fa-train"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Frota de Trens</h6>
+                    <p class="text-muted small">Cadastre locomotivas, inspecione velocidades e status.</p>
+                </div>
+                <a href="tala-lista-de-trens.php" class="btn btn-primary btn-sm w-100 fw-semibold mt-3">
+                    Acessar Trens <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card-admin-module">
+                <div>
+                    <div class="metric-icon-box bg-success-subtle text-success mb-3">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Gestão de Rotas</h6>
+                    <p class="text-muted small">Gerencie origens, destinos, distâncias e trens.</p>
+                </div>
+                <a href="tela-tela-lista-rotas.php" class="btn btn-outline-success btn-sm w-100 fw-semibold mt-3">
+                    Acessar Rotas <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card-admin-module">
+                <div>
+                    <div class="metric-icon-box bg-warning-subtle text-warning-emphasis mb-3">
+                        <i class="fa-solid fa-tower-observation"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Telemetria & Sensores</h6>
+                    <p class="text-muted small">Monitore dados de sensores e cruzamentos.</p>
+                </div>
+                <a href="tela-lista-sensores.php" class="btn btn-outline-warning btn-sm w-100 fw-semibold text-dark mt-3">
+                    Acessar Sensores <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card-admin-module">
+                <div>
+                    <div class="metric-icon-box bg-info-subtle text-info mb-3">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">Usuários & Acessos</h6>
+                    <p class="text-muted small">Controle de credenciais e perfis do sistema.</p>
+                </div>
+                <a href="tela-lista-usuarios.php" class="btn btn-outline-info btn-sm w-100 fw-semibold mt-3">
+                    Acessar Usuários <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php require_once __DIR__ . '/rodape.php'; ?>

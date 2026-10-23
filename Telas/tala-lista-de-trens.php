@@ -1,77 +1,111 @@
 <?php
-require_once '../includes/auth.php';
-exigirAutenticacao();
-require_once 'conexao.php';
-require_once 'cabecalho.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-$sql = "SELECT t.*, u.nome AS nome_responsavel 
-        FROM trens t 
-        LEFT JOIN usuarios u ON t.id_usuario_responsavel = u.id_usuario 
-        ORDER BY t.id_trem DESC";
-$resultado = $conexao->query($sql);
+if (!isset($_SESSION['id_usuario']) || empty($_SESSION['id_usuario'])) {
+    header('Location: tela-login.php');
+    exit();
+}
+
+require_once __DIR__ . '/conexao.php';
+
+if (!isset($conexao) || !($conexao instanceof mysqli)) {
+    if (isset($conn) && $conn instanceof mysqli) {
+        $conexao = $conn;
+    } elseif (isset($mysqli) && $mysqli instanceof mysqli) {
+        $conexao = $mysqli;
+    } else {
+        $conexao = @new mysqli('localhost', 'root', '', 'ferrorama');
+    }
+}
+
+require_once __DIR__ . '/cabecalho.php';
+
+$ehAdmin = isset($_SESSION['perfil']) && (strcasecmp($_SESSION['perfil'], 'Administrador') === 0);
+
+$sql = "SELECT * FROM trens ORDER BY id_trem DESC";
+$resultado = ($conexao && !$conexao->connect_error) ? $conexao->query($sql) : false;
 ?>
 
-<div style="max-width: 1000px; margin: 30px auto; padding: 20px; font-family: Arial, sans-serif;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Gestão de Trens</h2>
-        <a href="tela-cadastro-trem.php" style="padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">+ Novo Trem</a>
-    </div>
-
-    <?php if (isset($_GET['msg'])): ?>
-        <div style="padding: 10px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 15px;">
-            <?php
-                if ($_GET['msg'] == 'salvo') echo "Trem salvo com sucesso!";
-                elseif ($_GET['msg'] == 'excluido') echo "Trem excluído com sucesso!";
-            ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['erro'])): ?>
-        <div style="padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 15px;">
-            <?php
-                if ($_GET['erro'] == 'sem_permissao') echo "Apenas administradores podem excluir trens.";
-                elseif ($_GET['erro'] == 'com_rotas') echo "Não é possível excluir este trem pois ele possui rotas vinculadas.";
-            ?>
-        </div>
-    <?php endif; ?>
-
-    <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <thead>
-            <tr style="background: #2c3e50; color: white; text-align: left;">
-                <th style="padding: 12px; border: 1px solid #ddd;">ID</th>
-                <th style="padding: 12px; border: 1px solid #ddd;">Nome</th>
-                <th style="padding: 12px; border: 1px solid #ddd;">Modelo</th>
-                <th style="padding: 12px; border: 1px solid #ddd;">Velocidade Máx.</th>
-                <th style="padding: 12px; border: 1px solid #ddd;">Status</th>
-                <th style="padding: 12px; border: 1px solid #ddd;">Responsável</th>
-                <th style="padding: 12px; border: 1px solid #ddd;">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($resultado && $resultado->num_rows > 0): ?>
-                <?php while ($trem = $resultado->fetch_assoc()): ?>
-                    <tr>
-                        <td style="padding: 10px; border: 1px solid #ddd;"><?php echo $trem['id_trem']; ?></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;"><?php echo htmlspecialchars($trem['nome_trem']); ?></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;"><?php echo htmlspecialchars($trem['modelo']); ?></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;"><?php echo $trem['velocidade_maxima']; ?> km/h</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;"><?php echo htmlspecialchars($trem['status']); ?></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;"><?php echo htmlspecialchars($trem['nome_responsavel'] ?? 'Nenhum'); ?></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">
-                            <a href="tela-cadastro-trem.php?id=<?php echo $trem['id_trem']; ?>" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
-                            <?php if (isset($_SESSION['perfil']) && $_SESSION['perfil'] === 'Administrador'): ?>
-                                <a href="processa-exclusao-trem.php?id=<?php echo $trem['id_trem']; ?>" onclick="return confirm('Deseja realmente excluir este trem?');" style="color: #dc3545; text-decoration: none;">Excluir</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="7" style="padding: 15px; text-align: center; border: 1px solid #ddd;">Nenhum trem cadastrado.</td>
-                </tr>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="p-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="h3 fw-bold text-dark mb-1"><i class="fa-solid fa-train text-primary me-2"></i>Frota de Trens</h2>
+                <p class="text-muted mb-0">Cadastre locomotivas, inspecione velocidades máximas e o status operacional.</p>
+            </div>
+            <?php if ($ehAdmin): ?>
+                <!-- Link apontando para o seu ficheiro real: tela-cadastro-trens.php -->
+                <a href="tela-cadastro-trens.php" class="btn btn-primary fw-semibold px-3 py-2">
+                    <i class="fa-solid fa-plus me-1"></i> Cadastrar Locomotiva
+                </a>
             <?php endif; ?>
-        </tbody>
-    </table>
+        </div>
+    </div>
 </div>
 
-<?php require_once 'rodape.php'; ?>
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr class="text-secondary small fw-bold">
+                        <th class="ps-4">ID</th>
+                        <th>NOME DA LOCOMOTIVA</th>
+                        <th>MODELO</th>
+                        <th>VELOCIDADE MÁXIMA</th>
+                        <th>STATUS OPERACIONAL</th>
+                        <?php if ($ehAdmin): ?>
+                            <th class="text-end pe-4">AÇÕES</th>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($resultado && $resultado->num_rows > 0): ?>
+                        <?php while ($trem = $resultado->fetch_assoc()): ?>
+                            <tr>
+                                <td class="ps-4 fw-bold text-secondary">#<?php echo $trem['id_trem']; ?></td>
+                                <td>
+                                    <span class="fw-bold text-dark"><i class="fa-solid fa-locomotive text-primary me-2"></i><?php echo htmlspecialchars($trem['nome_trem']); ?></span>
+                                </td>
+                                <td><span class="badge bg-light text-dark border"><?php echo htmlspecialchars($trem['modelo'] ?? 'Locomotiva Padrão'); ?></span></td>
+                                <td class="fw-semibold text-dark">
+                                    <i class="fa-solid fa-gauge-high text-info me-1"></i> <?php echo htmlspecialchars($trem['velocidade_maxima'] ?? '80'); ?> km/h
+                                </td>
+                                <td>
+                                    <?php 
+                                        $status = $trem['status'] ?? 'Operacional';
+                                        $bgClass = ($status === 'Operacional') ? 'bg-success' : (($status === 'Manutenção') ? 'bg-warning text-dark' : 'bg-secondary');
+                                    ?>
+                                    <span class="badge <?php echo $bgClass; ?> px-3 py-2 rounded-pill">
+                                        <i class="fa-solid fa-circle me-1 small"></i> <?php echo htmlspecialchars($status); ?>
+                                    </span>
+                                </td>
+                                <?php if ($ehAdmin): ?>
+                                    <td class="text-end pe-4">
+                                        <a href="tela-cadastro-trens.php?id=<?php echo $trem['id_trem']; ?>" class="btn btn-light btn-sm text-primary me-1 border" title="Editar">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <a href="tela-exclusao-trem.php?id=<?php echo $trem['id_trem']; ?>" onclick="return confirm('Deseja realmente excluir esta locomotiva?');" class="btn btn-light btn-sm text-danger border" title="Excluir">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </a>
+                                    </td>
+                                <?php endif; ?>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="<?php echo $ehAdmin ? '6' : '5'; ?>" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-train fa-2x mb-2 d-block text-secondary"></i>
+                                Nenhuma locomotiva cadastrada na frota.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/rodape.php'; ?>
