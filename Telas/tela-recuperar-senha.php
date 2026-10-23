@@ -23,7 +23,6 @@ $emailValidado = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
 
-    // ETAPA 1: Verificar se o e-mail existe
     if ($acao === 'verificar_email') {
         $email = trim($_POST['email'] ?? '');
 
@@ -48,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // ETAPA 2: Redefinir a senha com criptografia
     if ($acao === 'redefinir_senha') {
         $email = trim($_POST['email'] ?? '');
         $nova_senha = trim($_POST['nova_senha'] ?? '');
@@ -63,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $emailValidado = $email;
             $etapa = 2;
         } else {
-            // Gera o hash criptografado da nova senha
             $senhaHash = password_hash($nova_senha, PASSWORD_DEFAULT);
 
             $stmt = $conexao->prepare("UPDATE usuarios SET senha = ? WHERE email = ?");
@@ -102,14 +99,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     <?php endif; ?>
 
-                    <!-- PASSO 1: INFORMAR O E-MAIL -->
                     <?php if ($etapa === 1): ?>
                         <form action="tela-recuperar-senha.php" method="POST">
                             <input type="hidden" name="acao" value="verificar_email">
 
                             <div class="mb-3">
                                 <label for="email" class="form-label text-secondary small fw-semibold">E-mail</label>
-                                <input type="email" id="email" name="email" class="form-control form-control-lg bg-light fs-6" required placeholder="muriloguima20@gmail.com">
+                                <input type="email" id="email" name="email" class="form-control form-control-lg bg-light fs-6" required placeholder="exemplo@gmail.com">
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2 mb-3">Continuar</button>
@@ -120,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </form>
                     <?php endif; ?>
 
-                    <!-- PASSO 2: INFORMAR A NOVA SENHA -->
                     <?php if ($etapa === 2): ?>
                         <form action="tela-recuperar-senha.php" method="POST">
                             <input type="hidden" name="acao" value="redefinir_senha">
@@ -144,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </form>
                     <?php endif; ?>
 
-                    <!-- PASSO 3: SUCESSO -->
                     <?php if ($etapa === 3): ?>
                         <div class="text-center py-2">
                             <div class="alert alert-success py-2 mb-3 small rounded-3">

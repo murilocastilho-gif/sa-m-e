@@ -128,7 +128,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <div class="text-center mt-3">
     <div class="small mb-1">
-        Ainda não tem uma conta? <a href="tela-cadastro-usuario.php" class="text-decoration-none fw-semibold">Registar-se</a>
+        Ainda não tem uma conta? <a href="tela-cadastro-user.php" class="text-decoration-none fw-semibold">Registar-se</a>
     </div>
     <div class="small">
         <a href="tela-recuperar-senha.php" class="text-decoration-none">Esqueceu-se da palavra-passe?</a>

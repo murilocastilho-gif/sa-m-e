@@ -1,85 +1,62 @@
-DROP DATABASE IF EXISTS ferrorama;
-CREATE DATABASE ferrorama CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE ferrorama;
+CREATE DATABASE IF NOT EXISTS `ferrorama` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `ferrorama`;
 
-CREATE TABLE usuarios (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    cpf VARCHAR(14) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    perfil ENUM('Administrador', 'Usuario', 'Comprador') NOT NULL DEFAULT 'Usuario',
-    status ENUM('Ativo', 'Inativo', 'Manutencao') NOT NULL DEFAULT 'Ativo',
-    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+DROP TABLE IF EXISTS `sensores`;
+DROP TABLE IF EXISTS `rotas`;
+DROP TABLE IF EXISTS `trens`;
+DROP TABLE IF EXISTS `usuarios`;
 
-CREATE TABLE trens (
-    id_trem INT AUTO_INCREMENT PRIMARY KEY,
-    nome_trem VARCHAR(100) NOT NULL,
-    modelo VARCHAR(50) NOT NULL DEFAULT 'Padrão',
-    velocidade_maxima INT NOT NULL DEFAULT 80,
-    status VARCHAR(30) DEFAULT 'Operacional',
-    id_usuario_responsavel INT NULL,
-    FOREIGN KEY (id_usuario_responsavel) REFERENCES usuarios (id_usuario) ON DELETE SET NULL
-);
+CREATE TABLE `usuarios` (
+  `id_usuario` INT AUTO_INCREMENT PRIMARY KEY,
+  `nome` VARCHAR(100) NOT NULL,
+  `cpf` VARCHAR(14) UNIQUE,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `senha` VARCHAR(255) NOT NULL,
+  `perfil` ENUM('Administrador', 'Usuario') NOT NULL DEFAULT 'Usuario',
+  `status` ENUM('Ativo', 'Inativo') NOT NULL DEFAULT 'Ativo',
+  `data_cadastro` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE rotas (
-    id_rota INT AUTO_INCREMENT PRIMARY KEY,
-    nome_rota VARCHAR(100) NOT NULL,
-    origem VARCHAR(100) NOT NULL,
-    destino VARCHAR(100) NOT NULL,
-    distancia_km DECIMAL(8,2) NOT NULL DEFAULT 0.00,
-    tempo_estimado_min INT NOT NULL DEFAULT 0,
-    id_trem INT NOT NULL,
-    FOREIGN KEY (id_trem) REFERENCES trens (id_trem) ON DELETE RESTRICT
-);
+CREATE TABLE `trens` (
+  `id_trem` INT AUTO_INCREMENT PRIMARY KEY,
+  `nome_trem` VARCHAR(100) NOT NULL,
+  `modelo` VARCHAR(50),
+  `status` ENUM('Em Operação', 'Em Manutenção', 'Inativo') NOT NULL DEFAULT 'Em Operação'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE sensores (
-    id_sensor INT AUTO_INCREMENT PRIMARY KEY,
-    nome_sensor VARCHAR(100) NOT NULL,
-    identificacao VARCHAR(50) NOT NULL DEFAULT 'SNS-001',
-    tipo_sensor VARCHAR(50) NOT NULL DEFAULT 'Presença',
-    localizacao VARCHAR(100) NOT NULL,
-    status VARCHAR(30) NOT NULL DEFAULT 'Ativo',
-    data_instalacao DATE DEFAULT CURRENT_DATE
-);
+CREATE TABLE `rotas` (
+  `id_rota` INT AUTO_INCREMENT PRIMARY KEY,
+  `nome_rota` VARCHAR(100) NOT NULL,
+  `origem` VARCHAR(100) NOT NULL,
+  `destino` VARCHAR(100) NOT NULL,
+  `descricao` TEXT,
+  `distancia_km` DECIMAL(10,2) DEFAULT 0.00,
+  `tempo_estimado_min` INT DEFAULT 0,
+  `id_trem` INT DEFAULT NULL,
+  CONSTRAINT `fk_rotas_trens` FOREIGN KEY (`id_trem`) REFERENCES `trens` (`id_trem`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE categorias (
-    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-    nome_categoria VARCHAR(100) NOT NULL
-);
+CREATE TABLE `sensores` (
+  `id_sensor` INT AUTO_INCREMENT PRIMARY KEY,
+  `tipo` VARCHAR(50) NOT NULL,
+  `localizacao` VARCHAR(100) NOT NULL,
+  `status` ENUM('Ativo', 'Inativo', 'Em Manutenção') NOT NULL DEFAULT 'Ativo',
+  `id_rota` INT DEFAULT NULL,
+  CONSTRAINT `fk_sensores_rotas` FOREIGN KEY (`id_rota`) REFERENCES `rotas` (`id_rota`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE produtos (
-    id_produto INT AUTO_INCREMENT PRIMARY KEY,
-    id_categoria INT NOT NULL,
-    nome_produto VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    preco DECIMAL(10,2) NOT NULL,
-    estoque INT NOT NULL DEFAULT 0,
-    CONSTRAINT fk_produtos_categorias FOREIGN KEY (id_categoria) REFERENCES categorias (id_categoria) ON DELETE CASCADE
-);
+INSERT INTO `usuarios` (`nome`, `cpf`, `email`, `senha`, `perfil`, `status`) VALUES
+('Administrador', '111.111.111-11', 'admin@ferrorama.com', '$2y$10$4Jyriz6RIAXwR97.gFDCg/1bEt1gtbdxvDfh6yi7kICL9kG', 'Administrador', 'Ativo'),
+('Usuário Comum', '222.222.222-22', 'usuario@ferrorama.com', '$2y$10$4Jyriz6RIAXwR97.gFDCg/1bEt1gtbdxvDfh6yi7kICL9kG', 'Usuario', 'Ativo');
 
-INSERT INTO usuarios (nome, cpf, email, senha, perfil, status) VALUES
-('Murilo Guimarães', '321.654.987-00', 'murilo_castilho@estudante.sesisenai.org.br', '123456', 'Administrador', 'Ativo'),
-('Enzo Gubulin', '123.456.789-00', 'enzo.gubulin@estudante.sesisenai.org.br', '654321', 'Administrador', 'Ativo'),
-('Usuário Teste', '111.222.333-44', 'usuario@ferrorama.com', '123456', 'Usuario', 'Ativo');
+INSERT INTO `trens` (`nome_trem`, `modelo`, `status`) VALUES
+('Locomotiva 01', 'ALCO FA-1', 'Em Operação'),
+('Locomotiva 02', 'GE U20C', 'Em Manutenção');
 
-INSERT INTO trens (nome_trem, modelo, velocidade_maxima, status, id_usuario_responsavel) VALUES
-('Locomotiva T-100', 'GE U20C', 90, 'Operacional', 1),
-('Expressa Z-200', 'EMD SD70', 110, 'Operacional', 2);
+INSERT INTO `rotas` (`nome_rota`, `origem`, `destino`, `descricao`, `distancia_km`, `tempo_estimado_min`, `id_trem`) VALUES
+('Rota Expressa Norte', 'Estação Central', 'Terminal Norte', 'Linha principal de passageiros', 45.50, 60, 1),
+('Rota Carga Sul', 'Pátio Industrial', 'Porto Sul', 'Linha dedicada ao transporte de carga', 120.00, 180, 2);
 
-INSERT INTO rotas (nome_rota, origem, destino, distancia_km, tempo_estimado_min, id_trem) VALUES
-('Linha Expressa Sul', 'Estação Central', 'Terminal Sul', 45.50, 40, 1);
-
-INSERT INTO sensores (nome_sensor, identificacao, tipo_sensor, localizacao, status, data_instalacao) VALUES
-('Sensor Pista A1', 'SNS-001-A', 'Presença', 'Curva Norte', 'Ativo', '2026-01-15'),
-('Sensor Velocidade V2', 'SNS-002-B', 'Velocidade', 'Reta Principal', 'Ativo', '2026-02-10');
-
-INSERT INTO categorias (nome_categoria) VALUES
-('Locomotivas'),
-('Trilhos e Vias'),
-('Vagões');
-
-INSERT INTO produtos (id_categoria, nome_produto, descricao, preco, estoque) VALUES
-(1, 'Locomotiva Maria Fumaça', 'Modelo clássico em escala', 350.00, 10),
-(2, 'Kit Trilhos Curvos', 'Conjunto com 8 unidades', 85.50, 25);
+INSERT INTO `sensores` (`tipo`, `localizacao`, `status`, `id_rota`) VALUES
+('Presença', 'Km 12 - Rota Norte', 'Ativo', 1),
+('Velocidade', 'Km 45 - Rota Sul', 'Em Manutenção', 2);
