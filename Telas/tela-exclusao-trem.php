@@ -28,13 +28,28 @@ if (!isset($conexao) || !($conexao instanceof mysqli)) {
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_trem = (int)$_GET['id'];
 
-    $stmt = $conexao->prepare("DELETE FROM trens WHERE id_trem = ?");
-    if ($stmt) {
-        $stmt->bind_param("i", $id_trem);
-        $stmt->execute();
+    $stmtCheck = $conexao->prepare("SELECT COUNT(*) FROM rotas WHERE id_trem = ?");
+    if ($stmtCheck) {
+        $stmtCheck->bind_param("i", $id_trem);
+        $stmtCheck->execute();
+        $stmtCheck->bind_result($qtdRotas);
+        $stmtCheck->fetch();
+        $stmtCheck->close();
+
+        if ($qtdRotas > 0) {
+            header('Location: tala-lista-de-trens.php?erro=vinculado');
+            exit();
+        }
+    }
+
+    $stmtDelete = $conexao->prepare("DELETE FROM trens WHERE id_trem = ?");
+    if ($stmtDelete) {
+        $stmtDelete->bind_param("i", $id_trem);
+        $stmtDelete->execute();
+        $stmtDelete->close();
     }
 }
 
-header('Location: tala-lista-de-trens.php');
+header('Location: tala-lista-de-trens.php?sucesso=excluido');
 exit();
 ?>
