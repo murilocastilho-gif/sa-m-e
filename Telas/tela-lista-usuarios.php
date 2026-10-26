@@ -2,6 +2,10 @@
 require_once 'conexao.php';
 require_once 'cabecalho.php';
 
+if (!isset($_SESSION['id_usuario']) || empty($_SESSION['id_usuario'])) {
+    header('Location: tela-login.php');
+    exit();
+}
 $stmt = $pdo->query("SELECT * FROM usuarios");
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
