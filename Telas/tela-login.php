@@ -125,11 +125,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <button type="submit" class="btn-login">Entrar</button>
     </form>
-
-    <div class="small">
-        <a href="tela-recuperar-senha.php" class="text-decoration-none">Esqueceu-se da palavra-passe?</a>
-    </div>
-</div>
     
 </div>
 
