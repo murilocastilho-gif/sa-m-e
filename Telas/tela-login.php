@@ -13,7 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
     
     <style>
         body.page-login {
-            background-color: #f8f9fa;
+            background-color: #0f172a;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -25,8 +25,8 @@ if (session_status() === PHP_SESSION_NONE) {
         .login-container {
             background: #ffffff;
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
             width: 100%;
             max-width: 420px;
         }
@@ -99,14 +99,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cadastro_sucesso'): ?>
         <div class="alert alert-success py-2 text-center" role="alert">
-            Registo realizado com sucesso! Faça login para aceder.
+            Cadastro realizado com sucesso! Faça login para acessar.
         </div>
     <?php endif; ?>
 
     <?php if (isset($_GET['erro'])): ?>
         <div class="alert alert-danger py-2 text-center" role="alert">
             <?php 
-                if ($_GET['erro'] === 'credenciais_invalidas') echo "E-mail ou palavra-passe incorretos!";
+                if ($_GET['erro'] === 'credenciais_invalidas') echo "E-mail ou senha incorretos!";
                 elseif ($_GET['erro'] === 'campos_vazios') echo "Preencha todos os campos.";
             ?>
         </div>
@@ -115,16 +115,20 @@ if (session_status() === PHP_SESSION_NONE) {
     <form action="verifica-login.php" method="POST">
         <div class="mb-3">
             <label for="email" class="form-label">E-mail</label>
-            <input type="email" id="email" name="email" class="form-control" required placeholder="Digite o seu e-mail">
+            <input type="email" id="email" name="email" class="form-control" required placeholder="Digite seu e-mail">
         </div>
 
         <div class="mb-3">
-            <label for="senha" class="form-label">Palavra-passe</label>
-            <input type="password" id="senha" name="senha" class="form-control" required placeholder="Digite a sua palavra-passe">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" id="senha" name="senha" class="form-control" required placeholder="Digite sua senha">
         </div>
 
         <button type="submit" class="btn-login">Entrar</button>
     </form>
+
+    <div class="login-footer">
+        Ainda não tem uma conta? <a href="tela-cadastro-user.php">Cadastre-se</a>
+    </div>
     
 </div>
 
