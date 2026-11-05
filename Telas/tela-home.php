@@ -1,9 +1,4 @@
 <?php
-
-<div id="widget-clima" class="mb-4"></div>
-
-<script src="../JavaScript/clima.js"></script>
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
