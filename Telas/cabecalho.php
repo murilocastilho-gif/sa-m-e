@@ -77,7 +77,7 @@ $ehAdmin       = (strcasecmp($perfilUsuario, 'Administrador') === 0);
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar- M-E ferrovias sticky-top py-2">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-ferrorama sticky-top py-2">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="tela-home.php">
             <i class="fa-solid fa-train-subway"></i> M-E Ferrovias
