@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ferrorama</title>
+    <title>Login - M-E Ferrovias </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -95,7 +95,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <body class="page-login">
 
 <div class="login-container">
-    <h2 class="login-title">Ferrorama</h2>
+    <h2 class="login-title"> M-E Ferrovias </h2>
 
     <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cadastro_sucesso'): ?>
         <div class="alert alert-success py-2 text-center" role="alert">

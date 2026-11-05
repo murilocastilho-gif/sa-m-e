@@ -2,7 +2,7 @@
 
 <footer class="footer mt-auto py-3 bg-white text-center border-top">
   <div class="container">
-    <span class="text-muted">Sistema Ferrorama - Ferrovia Inteligente &copy; 2026</span>
+    <span class="text-muted">Sistema M-E Ferrovias - Ferrovia Inteligente &copy; 2026</span>
   </div>
 </footer>
 

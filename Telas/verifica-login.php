@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <body class='bg-light d-flex align-items-center justify-content-center' style='height: 100vh;'>
                     <div class='card p-4 text-center shadow-sm' style='max-width: 400px;'>
                         <h4 class='text-success mb-3'>✓ Login efetuado!</h4>
-                        <p class='text-muted'>A entrar no sistema Ferrorama...</p>
+                        <p class='text-muted'>A entrar no sistema M-E Ferrovias...</p>
                         <a href='tela-home.php' class='btn btn-primary mt-2'>Aceder à Tela Home</a>
                     </div>
                 </body>

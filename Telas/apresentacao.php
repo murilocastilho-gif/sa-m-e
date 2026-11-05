@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferrorama — Sistema Inteligente de Gestão Ferroviária</title>
+    <title>M-E Ferrovias — Sistema Inteligente de Gestão Ferroviária</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,7 +21,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-4" href="#"><i class="fa-solid fa-train text-primary me-2"></i>Ferrorama</a>
+            <a class="navbar-brand fw-bold fs-4" href="#"><i class="fa-solid fa-train text-primary me-2"></i>M-E Ferrovias </a>
             <a href="tela-login.php" class="btn btn-outline-light rounded-pill px-4">Acessar Sistema</a>
         </div>
     </nav>
@@ -32,7 +32,7 @@
                 <div class="col-lg-7">
                     <span class="badge bg-warning text-dark mb-3 px-3 py-2 fw-semibold">Tecnologia IoT & Telemetria</span>
                     <h1 class="display-4 fw-bold mb-3">Monitoramento e Gestão Ferroviária em Tempo Real</h1>
-                    <p class="lead mb-4 opacity-75">O Ferrorama integra controle de frota, rastreamento de rotas e sensores de velocidade e presença para elevar a eficiência e segurança operacional.</p>
+                    <p class="lead mb-4 opacity-75">O M-E Ferrovias integra controle de frota, rastreamento de rotas e sensores de velocidade e presença para elevar a eficiência e segurança operacional.</p>
                     <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
                         <a href="tela-login.php" class="btn btn-warning btn-lg fw-bold px-4 rounded-3 text-dark">Entrar na Plataforma</a>
                         <a href="#funcionalidades" class="btn btn-outline-light btn-lg px-4 rounded-3">Saiba Mais</a>

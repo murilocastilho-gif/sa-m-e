@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuário - Ferrorama</title>
+    <title>Cadastro de Usuário - M-E Ferrovias</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                 <div class="card-header bg-primary text-white p-3 d-flex align-items-center justify-content-between">
                     <h4 class="fw-bold mb-0 fs-5"><i class="fa-solid fa-user-plus me-2"></i>Cadastro de Usuário</h4>
-                    <span class="badge bg-light text-primary">Ferrorama</span>
+                    <span class="badge bg-light text-primary">M-E Ferrovias</span>
                 </div>
 
                 <div class="card-body p-4">

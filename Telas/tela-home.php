@@ -144,7 +144,7 @@ if ($conexao && !$conexao->connect_error) {
             <?php if ($ehAdmin): ?>
                 Você possui privilégios de <span class="badge bg-danger">Administrador</span> do sistema.
             <?php else: ?>
-                Consulte aqui as rotas e os trechos ferroviários disponíveis no Ferrorama.
+                Consulte aqui as rotas e os trechos ferroviários disponíveis no M-E Ferrovias.
             <?php endif; ?>
         </p>
     </div>
@@ -304,7 +304,7 @@ if ($conexao && !$conexao->connect_error) {
 
     <div class="mb-4">
         <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-cubes-stacked text-primary me-2"></i>Módulos Administrativos</h5>
-        <p class="text-muted small">Acesso rápido aos painéis de gerenciamento do Ferrorama.</p>
+        <p class="text-muted small">Acesso rápido aos painéis de gerenciamento do M-E Ferrovias.</p>
     </div>
 
     <div class="row g-4 mb-4">
