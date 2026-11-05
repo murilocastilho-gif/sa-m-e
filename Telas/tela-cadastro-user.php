@@ -87,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <form action="" method="POST" autocomplete="off">
-                        <!-- DADOS PESSOAIS -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label for="nome" class="form-label fw-semibold small">Nome Completo *</label>
@@ -112,9 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <!-- ENDEREÇO & API VIACEP (ETAPA 10) -->
                         <hr class="text-muted my-4">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-location-dot me-2"></i>Endereço Operacional (Busca Automática por CEP)</h6>
+                        <h6 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-location-dot me-2"></i>Endereço Operacional</h6>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-4">
@@ -170,7 +168,6 @@ function mascaraCPF(input) {
 }
 </script>
 
-<!-- INTEGRAÇÃO COM API VIACEP E BOOTSTRAP -->
 <script src="../JavaScript/cep.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
