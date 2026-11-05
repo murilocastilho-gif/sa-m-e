@@ -61,7 +61,7 @@ if ($conexao && !$conexao->connect_error) {
         padding: 32px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
         border: 1px solid #334155;
-        margin-bottom: 32px;
+        margin-bottom: 24px;
     }
 
     .hero-title {
@@ -75,8 +75,12 @@ if ($conexao && !$conexao->connect_error) {
         border: 1px solid #e2e8f0;
         border-radius: 16px;
         padding: 24px;
-        transition: all 0.25s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
         box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .card-metric:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     .metric-icon-box {
@@ -109,11 +113,15 @@ if ($conexao && !$conexao->connect_error) {
         border: 1px solid #e2e8f0;
         border-radius: 16px;
         padding: 24px;
-        transition: all 0.25s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+    }
+    .card-admin-module:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     .table-card {
@@ -156,6 +164,8 @@ if ($conexao && !$conexao->connect_error) {
         </a>
     <?php endif; ?>
 </div>
+
+<div id="widget-clima" class="mb-4"></div>
 
 <?php if ($ehAdmin): ?>
     <div class="row g-4 mb-4">
@@ -291,12 +301,13 @@ if ($conexao && !$conexao->connect_error) {
 </div>
 
 <?php if ($ehAdmin): ?>
+
     <div class="mb-4">
         <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-cubes-stacked text-primary me-2"></i>Módulos Administrativos</h5>
         <p class="text-muted small">Acesso rápido aos painéis de gerenciamento do Ferrorama.</p>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
         <div class="col-12 col-md-6 col-lg-3">
             <div class="card-admin-module">
                 <div>
@@ -358,5 +369,7 @@ if ($conexao && !$conexao->connect_error) {
         </div>
     </div>
 <?php endif; ?>
+
+<script src="../JavaScript/clima.js"></script>
 
 <?php require_once __DIR__ . '/rodape.php'; ?>
