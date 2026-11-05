@@ -125,10 +125,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <button type="submit" class="btn-login">Entrar</button>
     </form>
-
-    <div class="login-footer">
-        Ainda não tem uma conta? <a href="tela-cadastro-user.php">Cadastre-se</a>
-    </div>
     
 </div>
 
